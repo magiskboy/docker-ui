@@ -2,5 +2,5 @@
 export interface IPayload {}
 export interface IAction {
   type: string;
-  payload: IPayload;
+  payload?: IPayload;
 }

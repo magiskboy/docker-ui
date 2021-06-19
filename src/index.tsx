@@ -5,15 +5,15 @@ import { I18nextProvider } from 'react-i18next';
 import i18next from 'i18next';
 import { ThemeProvider } from '@material-ui/core/styles';
 import { LightTheme } from 'theme';
+import store from 'helpers/store';
+import App from './App';
 import 'index.css';
-import { store } from 'helpers';
 
 import common_en from 'translations/en/common.json';
 import errors_en from 'translations/en/errors.json';
 
 import common_vi from 'translations/vi/common.json';
 import errors_vi from 'translations/vi/errors.json';
-import App from './App';
 
 i18next.init({
   interpolation: { escapeValue: false },

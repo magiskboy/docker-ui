@@ -16,29 +16,27 @@ import ChevronRightIcon from '@material-ui/icons/ChevronRight';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ListItemText from '@material-ui/core/ListItemText';
+import { connect } from 'react-redux';
+import { State } from 'reducers';
+import { IMetaState } from 'reducers/meta';
 
 import { isMobile } from 'helpers/commons';
-import { menuItems, defaultTitle } from './config';
+import { menuItems } from './config';
 import useStyles from './styles';
-import dockerImage from 'assets/images/docker-logo.png';
+import dockerImage from 'assets/images/docker-logo-213x50.png';
 
 interface AppContainerProps {
-  title?: string;
+  meta: IMetaState;
 }
 
-const AppContainer: React.FC<AppContainerProps> = ({ children, title }) => {
+const AppContainer: React.FC<AppContainerProps> = ({ children, meta }) => {
   const classes = useStyles();
   const theme = useTheme();
   const [open, setOpen] = React.useState(!isMobile());
   const history = useHistory();
 
-  const handleDrawerOpen = () => {
-    setOpen(true);
-  };
-
-  const handleDrawerClose = () => {
-    setOpen(false);
-  };
+  const handleOpen = () => setOpen(true);
+  const handleClose = () => setOpen(false);
 
   return (
     <div className={classes.root}>
@@ -53,8 +51,8 @@ const AppContainer: React.FC<AppContainerProps> = ({ children, title }) => {
           <IconButton
             color="inherit"
             aria-label="open drawer"
-            onClick={handleDrawerOpen}
             edge="start"
+            onClick={handleOpen}
             className={clsx(classes.menuButton, {
               [classes.hide]: open,
             })}
@@ -62,7 +60,7 @@ const AppContainer: React.FC<AppContainerProps> = ({ children, title }) => {
             <MenuIcon />
           </IconButton>
           <Typography variant="h6" noWrap>
-            {title || defaultTitle}
+            {meta.title}
           </Typography>
         </Toolbar>
       </AppBar>
@@ -84,11 +82,11 @@ const AppContainer: React.FC<AppContainerProps> = ({ children, title }) => {
             <img src={dockerImage} />
           </div>
           <div className={classes.closeToolbar}>
-            <IconButton onClick={handleDrawerClose}>
+            <IconButton>
               {theme.direction === 'rtl' ? (
-                <ChevronRightIcon />
+                <ChevronRightIcon onClick={handleClose} />
               ) : (
-                <ChevronLeftIcon />
+                <ChevronLeftIcon onClick={handleClose} />
               )}
             </IconButton>
           </div>
@@ -121,4 +119,8 @@ const AppContainer: React.FC<AppContainerProps> = ({ children, title }) => {
   );
 };
 
-export default AppContainer;
+const mapStateToProps = (state: State) => ({
+  meta: state.meta,
+});
+
+export default connect(mapStateToProps, {})(AppContainer);

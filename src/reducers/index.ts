@@ -1,17 +1,21 @@
 import { combineReducers } from 'redux';
 import { IAction } from 'reducers/interfaces';
-import { user, IUserState } from './user';
+import { container, IContainerState } from './containers';
+import { meta, IMetaState } from './meta';
 
 interface State {
-  user: IUserState;
+  container: IContainerState;
+  meta: IMetaState;
 }
 
 interface Action {
-  user: IAction;
+  container: IAction;
+  meta: IAction;
 }
 
 const rootReducer = combineReducers({
-  user,
+  container,
+  meta,
 });
 
 export default rootReducer;

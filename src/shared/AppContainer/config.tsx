@@ -20,8 +20,6 @@ type MenuItem = {
   path: string;
 };
 
-export const defaultTitle = 'Docker UI';
-
 export const menuItems: MenuItem[] = [
   {
     text: 'Containers',

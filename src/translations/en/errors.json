@@ -1,0 +1,8 @@
+{
+  "form": {
+    "required": "{{FieldName}} is required",
+    "MinLength": "Length must be great than {{value}}",
+    "MaxLength": "Length must be less than {{value}}",
+    "InvalidEmailFormat": "Field must be email addess"
+  }
+}

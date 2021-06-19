@@ -1,0 +1,8 @@
+{
+  "form": {
+    "required": "{{FieldName}} bắt buộc nhập",
+    "MinLength": "Độ dài tối thiểu là {{value}}",
+    "MaxLength": "Độ dài tối đa là {{value}}",
+    "InvalidEmailFormat": "Sai định dạng email"
+  }
+}

@@ -1,0 +1,17 @@
+{
+    "title": {
+        "Login": "Đăng nhập",
+        "Register": "Đăng kí",
+        "EmailAddress": "Địa chỉ email",
+        "Password": "Mật khẩu",
+        "LastName": "Họ",
+        "FirstName": "Tên"
+    },
+    "text": {
+        "ForgotPassword": "Quên mật khẩu?",
+        "RegisterReminder": "Chưa có tài khoản? Đăng kí",
+        "RememberMe": "Ghi nhớ tôi?",
+        "Copyright": "Bản quyền thuộc về ",
+        "AlreadyHaveAnAccount": "Bận đã có tài khoản? Đăng nhập"
+    }
+}

@@ -1,0 +1,17 @@
+{
+    "title": {
+        "Login": "Login",
+        "Register": "Register",
+        "EmailAddress": "Email address",
+        "Password": "Password",
+        "FirstName": "First name",
+        "LastName": "Last name"
+    },
+    "text": {
+        "ForgotPassword": "Forgot password?",
+        "RegisterReminder": "Don't have an account? Sign Up",
+        "RememberMe": "Remember me?",
+        "Copyright": "Copyright © ",
+        "AlreadyHaveAnAccount": "Already have an account? Sign in"
+    }
+}

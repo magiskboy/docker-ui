@@ -54,7 +54,6 @@ const useStyles = makeStyles((theme: Theme) =>
     toolbar: {
       display: 'flex',
       alignItems: 'center',
-      justifyContent: 'flex-end',
       padding: theme.spacing(0, 1),
       ...theme.mixins.toolbar,
     },
@@ -64,7 +63,16 @@ const useStyles = makeStyles((theme: Theme) =>
     },
     contentShift: {},
     drawerHeader: { paddingTop: theme.spacing(5) },
-  }),
+    logo: {
+      width: '79%',
+      '& img': {
+        width: '100%',
+      },
+    },
+    closeToolbar: {
+      width: '20%',
+    },
+  })
 );
 
 export default useStyles;

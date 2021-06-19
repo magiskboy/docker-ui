@@ -1,3 +1,11 @@
-export { default as Home } from './Home/Home';
-export { default as Login } from './Login/Login';
-export { default as Register } from './Register/Register';
+export { default as Config } from './Config/Config';
+export { default as Container } from './Container/Container';
+export { default as Image } from './Image/Image';
+export { default as Network } from './Network/Network';
+export { default as Node } from './Node/Node';
+export { default as Plugin } from './Plugin/Plugin';
+export { default as Secret } from './Secret/Secret';
+export { default as Service } from './Service/Service';
+export { default as Swarm } from './Swarm/Swarm';
+export { default as Task } from './Task/Task';
+export { default as Volume } from './Volume/Volume';

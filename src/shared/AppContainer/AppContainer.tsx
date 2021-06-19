@@ -1,5 +1,6 @@
 import React from 'react';
 import clsx from 'clsx';
+import { useHistory } from 'react-router-dom';
 import { useTheme } from '@material-ui/core/styles';
 import Drawer from '@material-ui/core/Drawer';
 import AppBar from '@material-ui/core/AppBar';
@@ -15,19 +16,21 @@ import ChevronRightIcon from '@material-ui/icons/ChevronRight';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ListItemText from '@material-ui/core/ListItemText';
-import InboxIcon from '@material-ui/icons/MoveToInbox';
-import MailIcon from '@material-ui/icons/Mail';
 
+import { isMobile } from 'helpers/commons';
+import { menuItems, defaultTitle } from './config';
 import useStyles from './styles';
+import dockerImage from 'assets/images/docker-logo.png';
 
 interface AppContainerProps {
-  title: string;
+  title?: string;
 }
 
 const AppContainer: React.FC<AppContainerProps> = ({ children, title }) => {
   const classes = useStyles();
   const theme = useTheme();
-  const [open, setOpen] = React.useState(false);
+  const [open, setOpen] = React.useState(!isMobile());
+  const history = useHistory();
 
   const handleDrawerOpen = () => {
     setOpen(true);
@@ -59,7 +62,7 @@ const AppContainer: React.FC<AppContainerProps> = ({ children, title }) => {
             <MenuIcon />
           </IconButton>
           <Typography variant="h6" noWrap>
-            {title}
+            {title || defaultTitle}
           </Typography>
         </Toolbar>
       </AppBar>
@@ -77,27 +80,33 @@ const AppContainer: React.FC<AppContainerProps> = ({ children, title }) => {
         }}
       >
         <div className={classes.toolbar}>
-          <IconButton onClick={handleDrawerClose}>
-            {theme.direction === 'rtl' ? <ChevronRightIcon /> : <ChevronLeftIcon />}
-          </IconButton>
+          <div className={classes.logo}>
+            <img src={dockerImage} />
+          </div>
+          <div className={classes.closeToolbar}>
+            <IconButton onClick={handleDrawerClose}>
+              {theme.direction === 'rtl' ? (
+                <ChevronRightIcon />
+              ) : (
+                <ChevronLeftIcon />
+              )}
+            </IconButton>
+          </div>
         </div>
         <Divider />
         <List>
-          {['Inbox', 'Starred', 'Send email', 'Drafts'].map((text, index) => (
-            <ListItem button key={text}>
-              <ListItemIcon>{index % 2 === 0 ? <InboxIcon /> : <MailIcon />}</ListItemIcon>
-              <ListItemText primary={text} />
-            </ListItem>
-          ))}
-        </List>
-        <Divider />
-        <List>
-          {['All mail', 'Trash', 'Spam'].map((text, index) => (
-            <ListItem button key={text}>
-              <ListItemIcon>{index % 2 === 0 ? <InboxIcon /> : <MailIcon />}</ListItemIcon>
-              <ListItemText primary={text} />
-            </ListItem>
-          ))}
+          {menuItems.map(
+            (item: { text: string; icon?: React.ReactNode; path: string }) => (
+              <ListItem
+                button
+                key={item.text}
+                onClick={() => history.push(item.path)}
+              >
+                {item.icon && <ListItemIcon>{item.icon}</ListItemIcon>}
+                <ListItemText primary={item.text} />
+              </ListItem>
+            )
+          )}
         </List>
       </Drawer>
       <main

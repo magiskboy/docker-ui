@@ -6,7 +6,6 @@ import i18next from 'i18next';
 import { ThemeProvider } from '@material-ui/core/styles';
 import { LightTheme } from 'theme';
 import 'index.css';
-import reportWebVitals from 'reportWebVitals';
 import { store } from 'helpers';
 
 import common_en from 'translations/en/common.json';
@@ -40,10 +39,5 @@ ReactDOM.render(
       </ThemeProvider>
     </I18nextProvider>
   </Provider>,
-  document.getElementById('root'),
+  document.getElementById('root')
 );
-
-// If you want to start measuring performance in your app, pass a function
-// to log results (for example: reportWebVitals(console.log))
-// or send to an analytics endpoint. Learn more: https://bit.ly/CRA-vitals
-reportWebVitals();

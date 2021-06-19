@@ -14,13 +14,10 @@ export interface ILoginUserPayload extends IPayload {
   rememberMe?: boolean;
 }
 
-const LoginUser: (state: IUserState, payload: ILoginUserPayload) => IUserState = (
-  _state,
-  payload,
-) => {
-  console.log('ILoginUserpayload', payload);
-  return { fullname: '', email: payload.email, token: '', profileUrl: '' };
-};
+const LoginUser: (state: IUserState, payload: ILoginUserPayload) => IUserState =
+  (_state, payload) => {
+    return { fullname: '', email: payload.email, token: '', profileUrl: '' };
+  };
 
 export interface IRegisterUserPayload extends IPayload {
   firstName: string;
@@ -29,11 +26,10 @@ export interface IRegisterUserPayload extends IPayload {
   password: string;
 }
 
-const RegisterUser: (state: IUserState, payload: IRegisterUserPayload) => IUserState = (
-  _state,
-  payload,
-) => {
-  console.log('IRegisterUser', payload);
+const RegisterUser: (
+  state: IUserState,
+  payload: IRegisterUserPayload
+) => IUserState = (_state, payload) => {
   return {
     fullname: payload.firstName + payload.lastName,
     email: payload.email,

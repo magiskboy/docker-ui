@@ -1,15 +1,20 @@
 import React from 'react';
 import { BrowserRouter, Route, Switch } from 'react-router-dom';
 
-import { Home, Login, Register } from 'pages';
+import routes from 'routes';
 
 const App: React.FC = () => {
   return (
     <BrowserRouter>
       <Switch>
-        <Route path="/" exact component={Home} />
-        <Route path="/login" component={Login} />
-        <Route path="/register" component={Register} />
+        {routes.map(([path, component]) => (
+          <Route
+            path={path as string}
+            key={path as string}
+            component={component as React.ComponentType}
+            exact
+          />
+        ))}
       </Switch>
     </BrowserRouter>
   );

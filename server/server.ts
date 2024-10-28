@@ -1,6 +1,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import express from 'express';
+import cors from 'cors';
 import { createProxyMiddleware } from 'http-proxy-middleware';
 
 const STATIC_DIR = path.join(path.dirname(__dirname), 'dist')
@@ -16,6 +17,7 @@ if (!fs.existsSync(DOCKER_SOCKET)) {
 }
 
 const app = express();
+app.use(cors());
 
 app.use('/api', createProxyMiddleware({
   target: {

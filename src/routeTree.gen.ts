@@ -16,39 +16,67 @@ import { Route as rootRoute } from './routes/__root'
 
 // Create Virtual Routes
 
-const AboutLazyImport = createFileRoute('/about')()
-const IndexLazyImport = createFileRoute('/')()
+const VolumesLazyImport = createFileRoute('/volumes')()
+const NetworksLazyImport = createFileRoute('/networks')()
+const ImagesLazyImport = createFileRoute('/images')()
+const ContainersLazyImport = createFileRoute('/containers')()
 
 // Create/Update Routes
 
-const AboutLazyRoute = AboutLazyImport.update({
-  id: '/about',
-  path: '/about',
+const VolumesLazyRoute = VolumesLazyImport.update({
+  id: '/volumes',
+  path: '/volumes',
   getParentRoute: () => rootRoute,
-} as any).lazy(() => import('./routes/about.lazy').then((d) => d.Route))
+} as any).lazy(() => import('./routes/volumes.lazy').then((d) => d.Route))
 
-const IndexLazyRoute = IndexLazyImport.update({
-  id: '/',
-  path: '/',
+const NetworksLazyRoute = NetworksLazyImport.update({
+  id: '/networks',
+  path: '/networks',
   getParentRoute: () => rootRoute,
-} as any).lazy(() => import('./routes/index.lazy').then((d) => d.Route))
+} as any).lazy(() => import('./routes/networks.lazy').then((d) => d.Route))
+
+const ImagesLazyRoute = ImagesLazyImport.update({
+  id: '/images',
+  path: '/images',
+  getParentRoute: () => rootRoute,
+} as any).lazy(() => import('./routes/images.lazy').then((d) => d.Route))
+
+const ContainersLazyRoute = ContainersLazyImport.update({
+  id: '/containers',
+  path: '/containers',
+  getParentRoute: () => rootRoute,
+} as any).lazy(() => import('./routes/containers.lazy').then((d) => d.Route))
 
 // Populate the FileRoutesByPath interface
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/': {
-      id: '/'
-      path: '/'
-      fullPath: '/'
-      preLoaderRoute: typeof IndexLazyImport
+    '/containers': {
+      id: '/containers'
+      path: '/containers'
+      fullPath: '/containers'
+      preLoaderRoute: typeof ContainersLazyImport
       parentRoute: typeof rootRoute
     }
-    '/about': {
-      id: '/about'
-      path: '/about'
-      fullPath: '/about'
-      preLoaderRoute: typeof AboutLazyImport
+    '/images': {
+      id: '/images'
+      path: '/images'
+      fullPath: '/images'
+      preLoaderRoute: typeof ImagesLazyImport
+      parentRoute: typeof rootRoute
+    }
+    '/networks': {
+      id: '/networks'
+      path: '/networks'
+      fullPath: '/networks'
+      preLoaderRoute: typeof NetworksLazyImport
+      parentRoute: typeof rootRoute
+    }
+    '/volumes': {
+      id: '/volumes'
+      path: '/volumes'
+      fullPath: '/volumes'
+      preLoaderRoute: typeof VolumesLazyImport
       parentRoute: typeof rootRoute
     }
   }
@@ -57,38 +85,48 @@ declare module '@tanstack/react-router' {
 // Create and export the route tree
 
 export interface FileRoutesByFullPath {
-  '/': typeof IndexLazyRoute
-  '/about': typeof AboutLazyRoute
+  '/containers': typeof ContainersLazyRoute
+  '/images': typeof ImagesLazyRoute
+  '/networks': typeof NetworksLazyRoute
+  '/volumes': typeof VolumesLazyRoute
 }
 
 export interface FileRoutesByTo {
-  '/': typeof IndexLazyRoute
-  '/about': typeof AboutLazyRoute
+  '/containers': typeof ContainersLazyRoute
+  '/images': typeof ImagesLazyRoute
+  '/networks': typeof NetworksLazyRoute
+  '/volumes': typeof VolumesLazyRoute
 }
 
 export interface FileRoutesById {
   __root__: typeof rootRoute
-  '/': typeof IndexLazyRoute
-  '/about': typeof AboutLazyRoute
+  '/containers': typeof ContainersLazyRoute
+  '/images': typeof ImagesLazyRoute
+  '/networks': typeof NetworksLazyRoute
+  '/volumes': typeof VolumesLazyRoute
 }
 
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/about'
+  fullPaths: '/containers' | '/images' | '/networks' | '/volumes'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/about'
-  id: '__root__' | '/' | '/about'
+  to: '/containers' | '/images' | '/networks' | '/volumes'
+  id: '__root__' | '/containers' | '/images' | '/networks' | '/volumes'
   fileRoutesById: FileRoutesById
 }
 
 export interface RootRouteChildren {
-  IndexLazyRoute: typeof IndexLazyRoute
-  AboutLazyRoute: typeof AboutLazyRoute
+  ContainersLazyRoute: typeof ContainersLazyRoute
+  ImagesLazyRoute: typeof ImagesLazyRoute
+  NetworksLazyRoute: typeof NetworksLazyRoute
+  VolumesLazyRoute: typeof VolumesLazyRoute
 }
 
 const rootRouteChildren: RootRouteChildren = {
-  IndexLazyRoute: IndexLazyRoute,
-  AboutLazyRoute: AboutLazyRoute,
+  ContainersLazyRoute: ContainersLazyRoute,
+  ImagesLazyRoute: ImagesLazyRoute,
+  NetworksLazyRoute: NetworksLazyRoute,
+  VolumesLazyRoute: VolumesLazyRoute,
 }
 
 export const routeTree = rootRoute
@@ -103,15 +141,23 @@ export const routeTree = rootRoute
     "__root__": {
       "filePath": "__root.tsx",
       "children": [
-        "/",
-        "/about"
+        "/containers",
+        "/images",
+        "/networks",
+        "/volumes"
       ]
     },
-    "/": {
-      "filePath": "index.lazy.tsx"
+    "/containers": {
+      "filePath": "containers.lazy.tsx"
     },
-    "/about": {
-      "filePath": "about.lazy.tsx"
+    "/images": {
+      "filePath": "images.lazy.tsx"
+    },
+    "/networks": {
+      "filePath": "networks.lazy.tsx"
+    },
+    "/volumes": {
+      "filePath": "volumes.lazy.tsx"
     }
   }
 }

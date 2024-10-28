@@ -25,7 +25,6 @@ declare module '@tanstack/react-router' {
 
 i18n.use(initReactI18next).init<HttpBackendOptions>({
   fallbackLng: 'en', 
-  loadPath: '/locales/{{lng}}/{{ns}}.json',
 })
 
 

@@ -1,8 +1,9 @@
 import { Modal } from 'antd';
+import { InspectorViewer } from './inspector-viewer';
 
 interface Props {
   title: string;
-  content: string;
+  content: object;
   onClose?: () => void;
   open: boolean;
 }
@@ -13,7 +14,7 @@ export const InspectorModal: React.FC<Props> = ({ title, content, onClose, open 
   }
 
   const onCopy = () => {
-    navigator.clipboard.writeText(content);
+    navigator.clipboard.writeText(JSON.stringify(content, null, 2));
   }
 
   return (
@@ -29,7 +30,10 @@ export const InspectorModal: React.FC<Props> = ({ title, content, onClose, open 
         cancelText="Copy JSON"
         closeIcon={false}
       >
-        <pre style={{ overflow: 'scroll', height: '600px' }}>{content}</pre>
+        <InspectorViewer 
+          fetcher={() => Promise.resolve(content)}
+          style={{ height: 'calc(100vh - 200px)', overflow: 'scroll' }}
+        />
       </Modal>
     </>
   )

@@ -1,2 +1,3 @@
 export * from './providers'
-export * from './InspectorModal';
+export * from './inspector-modal';
+export * from './container-interaction';

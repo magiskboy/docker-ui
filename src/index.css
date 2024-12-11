@@ -7,3 +7,7 @@ html, body {
 div#root {
   height: 100%;
 }
+
+.ant-tabs-content, .ant-tabs-tabpane {
+  height: 100%;
+}

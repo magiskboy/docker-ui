@@ -1,4 +1,4 @@
-import { atomWithMutation, atomWithQuery} from 'jotai-tanstack-query';
+import { atomWithMutation, atomWithQuery } from 'jotai-tanstack-query';
 import _ from 'lodash';
 import { ImageApi, Configuration } from '../api/docker-engine';
 import { API_URL } from '../constants';
@@ -7,7 +7,7 @@ import { handleAxiosError } from '../utils/errors';
 import { atom } from 'jotai';
 
 
-const imageApi = new ImageApi(new Configuration({
+export const imageApi = new ImageApi(new Configuration({
   basePath: API_URL,
 }));
 

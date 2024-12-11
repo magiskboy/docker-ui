@@ -1,17 +1,18 @@
 import { createLazyFileRoute } from '@tanstack/react-router'
 import { useAtom, useAtomValue } from 'jotai'
-import { networkInspectorAtom, networkInspectorIdAtom, networksAtom } from '../atoms/networks'
-import { Divider, Flex, Table, type TableColumnType, Button, Badge, Checkbox, theme } from 'antd';
+import { networkInspectorAtom, networkInspectorIdAtom, networksAtom, deleteNetworAtom } from '../../atoms/networks'
+import { Divider, Flex, Table, type TableColumnType, Button, Badge, Checkbox, theme, notification, Popconfirm } from 'antd';
 import { useEffect } from 'react';
-import { handleAxiosError } from '../utils/errors';
+import { handleAxiosError } from '../../utils/errors';
 import ButtonGroup from 'antd/es/button/button-group';
 import { IoIosRefresh } from 'react-icons/io';
-import { compareStrings } from '../utils';
+import { compareStrings } from '../../utils';
 import { HiMagnifyingGlass } from "react-icons/hi2";
-import { InspectorModal } from '../components';
+import { InspectorModal } from '../../components';
+import { AiOutlineDelete } from 'react-icons/ai';
 
 
-export const Route = createLazyFileRoute('/networks')({
+export const Route = createLazyFileRoute('/networks/')({
   component: Page,
 })
 
@@ -20,12 +21,25 @@ function Page() {
   const { token: {marginXS} } = theme.useToken();
   const [networkInspectorId, setNetworkInspectorId] = useAtom(networkInspectorIdAtom);
   const [{ data: networkInspector }] = useAtom(networkInspectorAtom);
+  const [{mutate: deleteNetwork}] = useAtom(deleteNetworAtom);
 
   useEffect(() => {
     if (isFetchNetworksError) {
       handleAxiosError(fetchNetworksError, 'Error fetching networks');
     }
   }, [isFetchNetworksError, fetchNetworksError]);
+
+  const onDeleteNetwork = (id: string) => {
+    deleteNetwork(id, {
+      onSuccess: () => {
+        refetchNetworks();
+        notification.success({
+          message: 'Success',
+          description: `Deleted ${id}`,
+        });
+      }
+    });
+  }
 
   const mappedData = (networks ?? []).map(network => ({
     id: network.Id,
@@ -109,6 +123,12 @@ function Page() {
       render: (_, record) => (
         <Flex gap={marginXS}>
           <Button icon={<HiMagnifyingGlass />} onClick={() => setNetworkInspectorId(record.name ?? record.id ?? '')}/>
+          <Popconfirm
+            title="Are you sure you want to delete this network?"
+            onConfirm={() => onDeleteNetwork(record.id ?? record.name ?? '')}
+          >
+            <Button icon={<AiOutlineDelete />} />
+          </Popconfirm>
         </Flex>
       ),
     }
@@ -126,7 +146,7 @@ function Page() {
       <Table columns={columns} dataSource={mappedData} />
       <InspectorModal
         title={networkInspector?.Name ?? ''}
-        content={JSON.stringify(networkInspector, null, 2)}
+        content={networkInspector!}
         open={!!networkInspectorId}
         onClose={() => setNetworkInspectorId('')}
       />

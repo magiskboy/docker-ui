@@ -1,27 +1,41 @@
-import { Table, Tooltip, Flex, Button, theme } from 'antd';
+import { Table, Tooltip, Flex, Button, theme, notification, Popconfirm } from 'antd';
 import { createLazyFileRoute } from '@tanstack/react-router'
 import { useAtom } from 'jotai'
-import { volumesAtom, volumeInspectorAtom, volumeInspectorNameAtom } from '../atoms/volumes'
+import { volumesAtom, volumeInspectorAtom, volumeInspectorNameAtom, deleteVolumeAtom } from '../../atoms/volumes'
 import { useEffect } from 'react';
-import { handleAxiosError } from '../utils/errors';
+import { handleAxiosError } from '../../utils/errors';
 import { TableColumnType } from 'antd';
-import { formatRelativeDate } from '../utils';
+import { formatRelativeDate, compareStrings } from '../../utils';
 import { HiMagnifyingGlass } from "react-icons/hi2";
-import { InspectorModal } from '../components';
+import { InspectorModal } from '../../components';
+import { AiOutlineDelete } from 'react-icons/ai';
 
 const MAX_VOLUME_NAME_LENGTH = 16;
 
 function Page() {
-  const [{ data: volumes, isFetching, error: isFetchVolumesError }] = useAtom(volumesAtom);
+  const [{ data: volumes, isFetching, error: isFetchVolumesError, refetch: refetchVolumes }] = useAtom(volumesAtom);
   const {token: {marginXS}} = theme.useToken();
   const [volumeInspectorName, setVolumeInspectorName] = useAtom(volumeInspectorNameAtom);
   const [{data: volumeInspector}] = useAtom(volumeInspectorAtom);
+  const [{mutate: deleteVolume}] = useAtom(deleteVolumeAtom);
 
   useEffect(() => {
     if (isFetchVolumesError) {
       handleAxiosError(isFetchVolumesError, 'Error fetching volumes');
     }
   }, [isFetchVolumesError]);
+
+  const onDeleteVolume = (id: string) => {
+    deleteVolume(id, {
+      onSuccess: () => {
+        refetchVolumes();
+        notification.success({
+          message: 'Success',
+          description: `Deleted ${id}`,
+        });
+      }
+    })
+  }
 
   const data = (volumes ?? []).map(volume => ({
     name: volume.Name,
@@ -42,7 +56,8 @@ function Page() {
         <Tooltip title={record.name}>
           {record.name.length > MAX_VOLUME_NAME_LENGTH ? `${record.name.slice(0, 16)}...` : record.name}
         </Tooltip>
-      )
+      ),
+      sorter: (a, b) => compareStrings(a.name, b.name),
     },
     {
       key: 'driver',
@@ -75,6 +90,12 @@ function Page() {
       render: (_,record) => (
         <Flex gap={marginXS}>
           <Button icon={<HiMagnifyingGlass />} onClick={() => setVolumeInspectorName(record.name ?? '')}/>
+          <Popconfirm
+            title="Are you sure you want to delete this volume?"
+            onConfirm={() => onDeleteVolume(record.name ?? '')}
+          >
+            <Button icon={<AiOutlineDelete />} />
+          </Popconfirm>
         </Flex>
       ),
     }
@@ -89,7 +110,7 @@ function Page() {
       />
       <InspectorModal
         title={volumeInspector?.Name ?? ''}
-        content={JSON.stringify(volumeInspector, null, 2)}
+        content={volumeInspector!}
         onClose={() => setVolumeInspectorName('')}
         open={!!volumeInspectorName}
       />
@@ -98,7 +119,7 @@ function Page() {
 }
 
 
-export const Route = createLazyFileRoute('/volumes')({
+export const Route = createLazyFileRoute('/volumes/')({
   component: Page,
 })
 

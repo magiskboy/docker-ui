@@ -3,8 +3,9 @@ import { ContainerApi, Configuration } from '../api/docker-engine';
 import { API_URL } from '../constants';
 import { handleAxiosError } from '../utils/errors';
 import { atom } from 'jotai';
+import { RunContainerOptions } from '../routes/images/-components/run-container-modal';
 
-const containerApi = new ContainerApi(new Configuration({
+export const containerApi = new ContainerApi(new Configuration({
   basePath: API_URL,
 }));
 
@@ -78,3 +79,29 @@ export const deleteContainerAtom = atomWithMutation((get) => ({
     handleAxiosError(error, 'Error deleting container');
   }
 }));
+
+export const createContainerAtom = atomWithMutation(() => ({
+  mutationKey: ['createContainer'],
+  mutationFn: async (options: RunContainerOptions) => {
+    const envParams = options.environments.map((env) => `${env.variable}=${env.value}`);
+    const portBindings = options.ports.reduce((acc, item) => ({
+      ...acc,
+      [`${item.container}/tcp`]: [{ HostPort: item.host, HostIp: '127.0.0.1' }]
+    }), {})
+    const response = await containerApi.containerCreate({
+      name: options.name.trim(),
+      body: {
+        Image: options.image.RepoTags![0],
+        Env: envParams,
+        HostConfig: {
+          PortBindings: portBindings
+        }
+      }
+    });
+    return response.data;
+  },
+  onError: (error: Error) => {
+    handleAxiosError(error, 'Error creating container');
+  }
+}));
+

@@ -1,8 +1,8 @@
-import { createLazyFileRoute } from '@tanstack/react-router'
+import { createLazyFileRoute, Link, useNavigate } from '@tanstack/react-router'
 import { useAtom, useAtomValue } from 'jotai';
 
-import { containersAtom, restartContainerAtom, startContainerAtom, stopContainerAtom, deleteContainerAtom, containerInspectorIdAtom, containerInspectorAtom } from '../atoms/containers';
-import { Divider, Table, Flex, Button, theme } from 'antd';
+import { containersAtom, restartContainerAtom, startContainerAtom, stopContainerAtom, deleteContainerAtom, containerInspectorIdAtom, containerInspectorAtom } from '../../atoms/containers';
+import { Divider, Table, Flex, Button, theme, Popconfirm } from 'antd';
 import type { TableColumnType } from 'antd';
 import ButtonGroup from 'antd/es/button/button-group';
 import { useEffect, useState } from 'react';
@@ -10,13 +10,15 @@ import { TableRowSelection } from 'antd/es/table/interface';
 import { FaRegCircleStop } from 'react-icons/fa6';
 import { MdOutlineRestartAlt } from 'react-icons/md';
 import { AiOutlineDelete } from 'react-icons/ai';
-import { FaRegPlayCircle } from 'react-icons/fa';
-import { handleAxiosError } from '../utils/errors';
-import { compareStrings } from '../utils';
+import { handleAxiosError } from '../../utils/errors';
+import { compareStrings } from '../../utils';
 import { HiMagnifyingGlass } from 'react-icons/hi2';
-import { InspectorModal } from '../components';
+import { InspectorModal } from '../../components';
+import { IoPlayOutline } from "react-icons/io5";
+import { IoLogoBuffer } from "react-icons/io";
 
-export const Route = createLazyFileRoute('/containers')({
+
+export const Route = createLazyFileRoute('/containers/')({
   component: Page,
 })
 
@@ -30,6 +32,8 @@ function Page() {
   const { token: {paddingXS} } = theme.useToken();
   const [containerInspectorId, setContainerInspectorId] = useAtom(containerInspectorIdAtom);
   const [{ data: containerInspector }] = useAtom(containerInspectorAtom);
+  const [showInspectorModal, setShowInspectorModal] = useState(false);
+  const navigate = useNavigate();
 
   useEffect(() => {
     if (isFetchContainerError) {
@@ -52,6 +56,8 @@ function Page() {
       dataIndex: 'name',
       title: 'Name',
       sorter: (a, b) => compareStrings(a.name, b.name),
+      render: (_, record) => 
+        <Link to={'/containers/$containerId'} params={{'containerId': record.name}}>{record.name}</Link>,
     },
     {
       key: 'ports',
@@ -69,19 +75,39 @@ function Page() {
       title: 'Actions',
       render: (_, record) => record.id ? (
         <Flex gap={paddingXS}>
-          <Button onClick={() => setContainerInspectorId(record.name)} icon={<HiMagnifyingGlass />} />
-          <Button color={record.state === 'running' ? 'danger' : 'primary'} variant='solid' icon={
-            record.state === 'running' ? <FaRegCircleStop /> : <FaRegPlayCircle />
-          } onClick={() => {
-            if (record.state === 'running') {
-              stopContainer(record.id!)
-            }
-            else {
-              startContainer(record.id!);
-            }
-          }} />
-          <Button icon={<MdOutlineRestartAlt />} onClick={() => restartContainer(record.id!)} />
-          <Button icon={<AiOutlineDelete onClick={() => deleteContainer(record.id!)} />} />
+          <Button onClick={() => {
+            setContainerInspectorId(record.name);
+            setShowInspectorModal(true);
+          }} icon={<HiMagnifyingGlass />} />
+
+          {record.state === 'running' ? 
+            <Popconfirm
+              title="Are you sure you want to stop this container?"
+              onConfirm={() => stopContainer(record.id!)}
+            >
+              <Button icon={<FaRegCircleStop />} />
+            </Popconfirm>
+            : <Button icon={<IoPlayOutline />} onClick={() => startContainer(record.id!)} />
+          }
+
+          <Popconfirm
+            title="Are you sure you want to restart this container?"
+            onConfirm={() => restartContainer(record.id!)}
+          >
+            <Button icon={<MdOutlineRestartAlt />} />
+          </Popconfirm>
+          <Popconfirm
+            title="Are you sure you want to delete this container?"
+            onConfirm={() => deleteContainer(record.id!)}
+          >
+            <Button icon={<AiOutlineDelete />} />
+          </Popconfirm>
+          <Button icon={<IoLogoBuffer 
+            onClick={() => navigate({
+              to: '/containers/$containerId', 
+              params: {containerId: record.name}, 
+              hash: 'log',
+            })} />} />
         </Flex>
       ) : null
     }
@@ -107,9 +133,9 @@ function Page() {
       <Table columns={columns} dataSource={mappedData} rowSelection={rowSelection} />
       <InspectorModal 
         title={containerInspectorId}
-        content={JSON.stringify(containerInspector, null, 2)} 
-        onClose={() => setContainerInspectorId('')} 
-        open={!!containerInspectorId}
+        content={containerInspector!} 
+        onClose={() => setShowInspectorModal(false)} 
+        open={showInspectorModal}
       />
     </>
   )

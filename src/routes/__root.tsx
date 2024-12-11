@@ -6,14 +6,15 @@ import {GoContainer, GoPackage } from 'react-icons/go';
 import { Button, Layout, Menu, theme, Image, Flex, Divider } from 'antd';
 import logo from '../assets/images/logo.png';
 import { LuNetwork } from 'react-icons/lu';
-import { MdOutlineStorage } from 'react-icons/md';
+import { MdOutlineStorage, MdOutlineSpaceDashboard } from 'react-icons/md';
 
-const { Header, Sider, Content } = Layout;
+
+const { Header, Sider } = Layout;
 
 const AppLayout: React.FC = () => {
   const [collapsed, setCollapsed] = useState(false);
   const {
-    token: { colorBgContainer, borderRadiusLG, padding, paddingXS },
+    token: { colorBgContainer, borderRadiusLG, padding, paddingXS, marginXS },
   } = theme.useToken();
   const navigate = useNavigate();
   const { pathname } = useLocation();
@@ -31,6 +32,12 @@ const AppLayout: React.FC = () => {
           defaultSelectedKeys={['/images']}
           selectedKeys={[pathname]}
           items={[
+            {
+              key: '/',
+              label: 'Dashboard',
+              icon: <MdOutlineSpaceDashboard />,
+              onClick: () => navigate({to: '/'}),
+            },
             {
               key: '/images',
               label: 'Images',
@@ -59,7 +66,7 @@ const AppLayout: React.FC = () => {
         />
       </Sider>
       <Layout>
-        <Header style={{ padding: 0, background: colorBgContainer }}>
+        <Header style={{ background: colorBgContainer, padding: 0 }}>
           <Button
             type="text"
             icon={collapsed ? <AiOutlineMenuUnfold /> : <AiOutlineMenuFold />}
@@ -71,18 +78,19 @@ const AppLayout: React.FC = () => {
             }}
           />
         </Header>
-        <Content
+        <Flex
+          vertical
           style={{
-            margin: '24px 16px',
-            padding: 24,
-            minHeight: 280,
+            margin: marginXS,
+            padding: `${paddingXS}px ${padding}px`,
             background: colorBgContainer,
             borderRadius: borderRadiusLG,
-            overflow: 'scroll',
+            height: '100%',
+            overflow: 'scroll'
           }}
         >
           <Outlet />
-        </Content>
+        </Flex>
       </Layout>
       <TanStackRouterDevtools />
     </Layout>

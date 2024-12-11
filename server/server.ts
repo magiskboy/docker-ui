@@ -6,7 +6,6 @@ import { createProxyMiddleware } from 'http-proxy-middleware';
 
 const STATIC_DIR = path.join(path.dirname(__dirname), 'dist')
 const OPENAPI_DIR = path.join(path.dirname(__dirname), 'openapi')
-console.log({ STATIC_DIR, OPENAPI_DIR })
 const HOST = process.env['HOST'] ?? 'localhost';
 const PORT = Number(process.env['PORT'] ?? '3000');
 const DOCKER_SOCKET = process.env['DOCKER_SOCKET'] ?? '/var/run/docker.sock';

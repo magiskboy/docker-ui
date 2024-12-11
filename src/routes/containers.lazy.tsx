@@ -1,7 +1,7 @@
 import { createLazyFileRoute } from '@tanstack/react-router'
-import { useAtomValue } from 'jotai';
+import { useAtom, useAtomValue } from 'jotai';
 
-import { containersAtom, restartContainerAtom, startContainerAtom, stopContainerAtom, deleteContainerAtom } from '../atoms/containers';
+import { containersAtom, restartContainerAtom, startContainerAtom, stopContainerAtom, deleteContainerAtom, containerInspectorIdAtom, containerInspectorAtom } from '../atoms/containers';
 import { Divider, Table, Flex, Button, theme } from 'antd';
 import type { TableColumnType } from 'antd';
 import ButtonGroup from 'antd/es/button/button-group';
@@ -12,6 +12,9 @@ import { MdOutlineRestartAlt } from 'react-icons/md';
 import { AiOutlineDelete } from 'react-icons/ai';
 import { FaRegPlayCircle } from 'react-icons/fa';
 import { handleAxiosError } from '../utils/errors';
+import { compareStrings } from '../utils';
+import { HiMagnifyingGlass } from 'react-icons/hi2';
+import { InspectorModal } from '../components';
 
 export const Route = createLazyFileRoute('/containers')({
   component: Page,
@@ -25,6 +28,8 @@ function Page() {
   const { mutate: startContainer } = useAtomValue(startContainerAtom);
   const { mutate: deleteContainer } = useAtomValue(deleteContainerAtom);
   const { token: {paddingXS} } = theme.useToken();
+  const [containerInspectorId, setContainerInspectorId] = useAtom(containerInspectorIdAtom);
+  const [{ data: containerInspector }] = useAtom(containerInspectorAtom);
 
   useEffect(() => {
     if (isFetchContainerError) {
@@ -34,7 +39,7 @@ function Page() {
 
   const mappedData = (containers ?? []).map(container => ({
     id: container.Id,
-    name: container.Names?.[0].slice(1),
+    name: container.Names?.[0].slice(1) ?? '',
     ports: container.Ports?.map(port => `${port.Type}:${port.IP ?? '0.0.0.0'}/${port.PublicPort ?? ''}:${port.PrivatePort}`),
     status: container.Status,
     state: container.State,
@@ -46,6 +51,7 @@ function Page() {
       key: 'name',
       dataIndex: 'name',
       title: 'Name',
+      sorter: (a, b) => compareStrings(a.name, b.name),
     },
     {
       key: 'ports',
@@ -63,6 +69,7 @@ function Page() {
       title: 'Actions',
       render: (_, record) => record.id ? (
         <Flex gap={paddingXS}>
+          <Button onClick={() => setContainerInspectorId(record.name)} icon={<HiMagnifyingGlass />} />
           <Button color={record.state === 'running' ? 'danger' : 'primary'} variant='solid' icon={
             record.state === 'running' ? <FaRegCircleStop /> : <FaRegPlayCircle />
           } onClick={() => {
@@ -98,6 +105,12 @@ function Page() {
       </Flex>
       <Divider />
       <Table columns={columns} dataSource={mappedData} rowSelection={rowSelection} />
+      <InspectorModal 
+        title={containerInspectorId}
+        content={JSON.stringify(containerInspector, null, 2)} 
+        onClose={() => setContainerInspectorId('')} 
+        open={!!containerInspectorId}
+      />
     </>
   )
 }

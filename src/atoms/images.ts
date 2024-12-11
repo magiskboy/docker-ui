@@ -4,11 +4,14 @@ import { ImageApi, Configuration } from '../api/docker-engine';
 import { API_URL } from '../constants';
 import { containersAtom } from './containers';
 import { handleAxiosError } from '../utils/errors';
+import { atom } from 'jotai';
 
 
 const imageApi = new ImageApi(new Configuration({
   basePath: API_URL,
 }));
+
+export const imageInspectorNameAtom = atom('');
 
 export const imagesAtom = atomWithQuery((get) => ({
   queryKey: ['images'],
@@ -32,6 +35,14 @@ export const imagesAtom = atomWithQuery((get) => ({
   },
   refetchIntervalInBackground: true,
   refetchInterval: 5000,
+}));
+
+export const imageInspectorAtom = atomWithQuery((get) => ({
+  queryKey: ['imageInspector', get(imageInspectorNameAtom)],
+  queryFn: async ({ queryKey: [,name]}) => {
+    const res = await imageApi.imageInspect({ name: name as string });
+    return res.data;
+  },
 }));
 
 export const deleteImagesAtoms = atomWithMutation(() => ({

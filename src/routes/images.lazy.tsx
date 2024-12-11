@@ -5,11 +5,12 @@ import { createLazyFileRoute } from '@tanstack/react-router'
 import { Flex, Table, Tag, Button, theme, Divider, notification, Typography } from 'antd';
 import type { TableColumnType, TableProps } from 'antd';
 import { formatBytes, compareDates, compareNumbers, compareStrings, formatRelativeDate } from '../utils';
-import { deleteImagesAtoms, imagesAtom } from '../atoms/images';
+import { deleteImagesAtoms, imageInspectorAtom, imagesAtom, imageInspectorNameAtom } from '../atoms/images';
 import ButtonGroup from 'antd/es/button/button-group';
 import { AiOutlineDelete } from 'react-icons/ai';
-import { GrView } from 'react-icons/gr';
+import { HiMagnifyingGlass } from "react-icons/hi2";
 import { handleAxiosError } from '../utils/errors';
+import { InspectorModal } from '../components';
 
 type TableRowSelection<T extends object = object> = TableProps<T>['rowSelection'];
 const { Text } = Typography;
@@ -25,7 +26,9 @@ function Page() {
   const [{data: images, isFetching, refetch, error: fetchImagesError, isError }] = useAtom(imagesAtom);
   const [{ mutate: deleteImages, status: deleteImageStatus }] = useAtom(deleteImagesAtoms);
   const [selectedRowKeys, setSelectedRowKeys] = useState<React.Key[]>([]);
-  const { token: {marginXS }} = theme.useToken();
+  const { token: { marginXS }} = theme.useToken();
+  const [imageInspectorName, setImageInspectorName] = useAtom(imageInspectorNameAtom);
+  const [{ data: imageInspector }] = useAtom(imageInspectorAtom);
 
   useEffect(() => {
     if (deleteImageStatus === 'success') {
@@ -100,7 +103,7 @@ function Page() {
       title: 'Actions',
       render: (_, record) => (
         <Flex gap={marginXS}>
-          <Button icon={<GrView />} />
+          <Button icon={<HiMagnifyingGlass />} onClick={() => setImageInspectorName(record.id)}/>
           {record.status !== 'Unused' && <Button
             danger
             icon={<AiOutlineDelete />}
@@ -149,6 +152,12 @@ function Page() {
         columns={columns} 
         loading={isFetching || deleteImageStatus === 'pending'} 
         rowSelection={rowSelection}
+      />
+      <InspectorModal 
+        title={imageInspectorName} 
+        content={JSON.stringify(imageInspector, null, 2)}
+        onClose={() => setImageInspectorName('')}
+        open={!!imageInspectorName}
       />
     </>
   )

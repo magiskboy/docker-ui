@@ -6,7 +6,7 @@ import { useEffect } from 'react';
 import { handleAxiosError } from '../../utils/errors';
 import { TableColumnType } from 'antd';
 import { formatRelativeDate, compareStrings } from '../../utils';
-import { HiMagnifyingGlass } from "react-icons/hi2";
+import { BsFiletypeJson } from "react-icons/bs";
 import { InspectorModal } from '../../components';
 import { AiOutlineDelete } from 'react-icons/ai';
 
@@ -89,7 +89,7 @@ function Page() {
       title: 'Actions',
       render: (_,record) => (
         <Flex gap={marginXS}>
-          <Button icon={<HiMagnifyingGlass />} onClick={() => setVolumeInspectorName(record.name ?? '')}/>
+          <Button icon={<BsFiletypeJson />} onClick={() => setVolumeInspectorName(record.name ?? '')}/>
           <Popconfirm
             title="Are you sure you want to delete this volume?"
             onConfirm={() => onDeleteVolume(record.name ?? '')}

@@ -1,5 +1,6 @@
 import { Modal } from 'antd';
-import { InspectorViewer } from './inspector-viewer';
+import { JsonViewer } from '../json-viewer';
+
 
 interface Props {
   title: string;
@@ -30,7 +31,7 @@ export const InspectorModal: React.FC<Props> = ({ title, content, onClose, open 
         cancelText="Copy JSON"
         closeIcon={false}
       >
-        <InspectorViewer 
+        <JsonViewer 
           fetcher={() => Promise.resolve(content)}
           style={{ height: 'calc(100vh - 200px)', overflow: 'scroll' }}
         />

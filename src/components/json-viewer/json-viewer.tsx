@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import ReactJson, { ReactJsonViewProps } from 'react-json-view';
 
 
-export const InspectorViewer: React.FC<Props> = ({ fetcher, ...rest }) => {
+export const JsonViewer: React.FC<Props> = ({ fetcher, ...rest }) => {
   const [data, setData] = useState<object>({});
 
   useEffect(() => {

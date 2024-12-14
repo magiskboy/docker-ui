@@ -12,7 +12,7 @@ import { MdOutlineRestartAlt } from 'react-icons/md';
 import { AiOutlineDelete } from 'react-icons/ai';
 import { handleAxiosError } from '../../utils/errors';
 import { compareStrings } from '../../utils';
-import { HiMagnifyingGlass } from 'react-icons/hi2';
+import { BsFiletypeJson } from "react-icons/bs";
 import { InspectorModal } from '../../components';
 import { IoPlayOutline } from "react-icons/io5";
 import { IoLogoBuffer } from "react-icons/io";
@@ -78,7 +78,7 @@ function Page() {
           <Button onClick={() => {
             setContainerInspectorId(record.name);
             setShowInspectorModal(true);
-          }} icon={<HiMagnifyingGlass />} />
+          }} icon={<BsFiletypeJson />} />
 
           {record.state === 'running' ? 
             <Popconfirm

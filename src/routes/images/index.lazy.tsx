@@ -28,7 +28,7 @@ import {
 } from '../../atoms/images'
 import ButtonGroup from 'antd/es/button/button-group'
 import { AiOutlineDelete } from 'react-icons/ai'
-import { HiMagnifyingGlass } from 'react-icons/hi2'
+import { BsFiletypeJson } from "react-icons/bs";
 import { handleAxiosError } from '../../utils/errors'
 import { InspectorModal } from '../../components'
 import { IoPlayOutline } from "react-icons/io5";
@@ -144,7 +144,7 @@ function Page() {
       render: (_, record) => (
         <Flex gap={marginXS}>
           <Button
-            icon={<HiMagnifyingGlass />}
+            icon={<BsFiletypeJson />}
             onClick={() => {
               setImageInspectorName(record.id);
               setIsOpenInspector(true);

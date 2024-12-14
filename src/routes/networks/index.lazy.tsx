@@ -7,7 +7,7 @@ import { handleAxiosError } from '../../utils/errors';
 import ButtonGroup from 'antd/es/button/button-group';
 import { IoIosRefresh } from 'react-icons/io';
 import { compareStrings } from '../../utils';
-import { HiMagnifyingGlass } from "react-icons/hi2";
+import { BsFiletypeJson } from "react-icons/bs";
 import { InspectorModal } from '../../components';
 import { AiOutlineDelete } from 'react-icons/ai';
 
@@ -122,7 +122,7 @@ function Page() {
       title: 'Actions',
       render: (_, record) => (
         <Flex gap={marginXS}>
-          <Button icon={<HiMagnifyingGlass />} onClick={() => setNetworkInspectorId(record.name ?? record.id ?? '')}/>
+          <Button icon={<BsFiletypeJson />} onClick={() => setNetworkInspectorId(record.name ?? record.id ?? '')}/>
           <Popconfirm
             title="Are you sure you want to delete this network?"
             onConfirm={() => onDeleteNetwork(record.id ?? record.name ?? '')}

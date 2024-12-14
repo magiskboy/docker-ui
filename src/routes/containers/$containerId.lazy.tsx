@@ -7,7 +7,7 @@ import { containerApi, focusedContainerAtom, focusedContainerIdOrNameAtom } from
 import { formatBytes } from '../../utils';
 import { headingAtom } from '../../atoms/common';
 import ReactJson from 'react-json-view';
-import { ContainerInteraction } from '../../components';
+import { ContainerShell } from '../../components';
 
 
 const { Text } = Typography;
@@ -47,9 +47,9 @@ function Page() {
           children: containerInspector ? <LogTab data={containerInspector} /> : null,
         },
         {
-          key: 'interaction',
-          label: 'Interaction',
-          children: containerInspector ? <InteractionTab data={containerInspector} /> : null,
+          key: 'shell',
+          label: 'Shell',
+          children: containerInspector ? <ShellTab data={containerInspector} /> : null,
         }
       ]} />
     </>
@@ -165,10 +165,10 @@ const LogTab:React.FC<{data: ContainerInspectResponse}> = ({data}) => {
   )
 }
 
-const InteractionTab: React.FC<{data: ContainerInspectResponse}> = ({data}) => {
+const ShellTab: React.FC<{data: ContainerInspectResponse}> = ({data}) => {
   return (
     <>
-      <ContainerInteraction name={data.Name!.slice(1)} />
+      <ContainerShell name={data.Name!.slice(1)} />
     </>
   )
 }

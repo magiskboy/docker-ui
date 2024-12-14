@@ -2,10 +2,11 @@ import React, { useEffect, useRef, useState } from 'react';
 import { Terminal } from '@xterm/xterm';
 import { FitAddon } from '@xterm/addon-fit';
 import { WebglAddon } from '@xterm/addon-webgl';
-import { API_URL } from '../constants';
+import styles from './container-shell.module.css';
+import { TerminalController } from './terminal-controller';
 
 
-export const ContainerInteraction: React.FC<Props> = ({name}) => {
+export const ContainerShell: React.FC<Props> = ({name}) => {
   const [instance, setInstance] = useState<Terminal>()
   const terminalRef = useRef<HTMLDivElement>(null);
 
@@ -19,11 +20,6 @@ export const ContainerInteraction: React.FC<Props> = ({name}) => {
       instance?.dispose();
     }
   }, [terminalRef]);  // eslint-disable-line
-
-  useEffect(() => {
-    if (!name) return;
-
-  }, [name]);
 
   useEffect(() => {
     if (instance && terminalRef.current) {
@@ -47,47 +43,12 @@ export const ContainerInteraction: React.FC<Props> = ({name}) => {
  
 
   return (
-    <div style={{ height: '100%' }} ref={terminalRef}></div>
+    <div className={styles['container-shell']} ref={terminalRef}></div>
   )
 }
 
 
 interface Props {
   name: string;
-}
-
-
-class TerminalController {
-  private ws: WebSocket;
-
-  constructor(private readonly terminal: Terminal, private readonly containerName: string) {
-    const host = new URL(API_URL);
-    host.protocol = 'ws';
-    this.ws = new WebSocket(host.origin);
-  }
-
-  get Terminal(): Terminal {
-    return this.terminal;
-  }
-
-  initialize() {
-    this.terminal.onData((e) => this.ws.send(JSON.stringify({
-      type: 'command',
-      command: e,
-    })));
-
-    this.ws.onopen = () => {
-      this.ws.send(JSON.stringify({
-        type: 'start',
-        command: ['/bin/sh'],
-        containerName: this.containerName,
-      }));
-    };
-
-    this.ws.onmessage = (event) => {
-      const data = JSON.parse(event.data);
-      this.terminal.write(data.data);
-    };
-  }
 }
 

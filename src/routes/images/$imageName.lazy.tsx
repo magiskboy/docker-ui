@@ -2,12 +2,11 @@ import { createLazyFileRoute } from '@tanstack/react-router'
 import { useAtom } from 'jotai';
 import { imageApi, focusedImageAtom, focusedImageIdOrNameAtom } from '../../atoms/images';
 import React, { useEffect, useState } from 'react';
-import { Typography, Tag, Flex, theme, Tabs, Row, Col, Table, TableColumnType, Tooltip} from 'antd';
+import { Tabs, Table, TableColumnType, Tooltip} from 'antd';
 import { HistoryResponseItem, ImageInspect } from '../../api/docker-engine';
 import ReactJson from 'react-json-view'
 import { formatBytes } from '../../utils';
-
-const { Text } = Typography;
+import { OverviewObject, OverviewObjectProps } from '../../components';
 
 
 function Page() {
@@ -57,73 +56,54 @@ export const Route = createLazyFileRoute('/images/$imageName')({
   component: Page,
 })
 
-const LABEL_SPAN = 3;
-
 
 const OverviewTab: React.FC<{data: ImageInspect}> = ({data}) => {
-  const {token: {marginSM, marginXS}} = theme.useToken();
+  const fieldConfigs: OverviewObjectProps<ImageInspect>['fieldConfigs'] = [
+      {
+        name: 'Name',
+        getValue: d => d.RepoTags?.[0],
+      },
+      {
+        name: 'Operating system',
+        getValue: d => `${d.Os} ${d.OsVersion}`,
+      },
+      {
+        name: 'Architecture',
+      },
+      {
+        name: 'Command',
+        getValue: d => d.Config?.Cmd?.join(' '),
+      },
+      {
+        name: 'Entrypoint',
+        getValue: d => d.Config?.Entrypoint?.[0],
+      },
+      {
+        name: 'Working dir',
+        getValue: d => d.Config?.WorkingDir,
+      },
+      {
+        name: 'Created',
+        getValue: d => d.Created ? new Date(d.Created).toLocaleString() : null,
+      },
+      {
+        name: 'Size',
+        getValue: d => formatBytes(d.Size ?? 0),
+      },
+      {
+        name: 'Environments',
+        getValue: d => Object.values(d.Config?.Env ?? {}),
+      },
+      {
+        name: 'Exposed ports',
+        getValue: d => Object.keys(d.Config?.ExposedPorts ?? {}),
+      }
+  ]
 
-  return (
-    <Flex gap={marginSM} vertical>
-      <Row>
-        <Col span={LABEL_SPAN}><Text strong>Name</Text></Col>
-        <Col span={12 - LABEL_SPAN}>{data.RepoTags?.[0]}</Col>
-      </Row>
-      <Row>
-        <Col span={LABEL_SPAN}><Text strong>Operating system</Text></Col>
-        <Col span={12 - LABEL_SPAN}>{data.Os} {data.OsVersion}</Col>
-      </Row>
-      <Row>
-        <Col span={LABEL_SPAN}><Text strong>Architecture</Text></Col>
-        <Col span={12 - LABEL_SPAN}>{data.Architecture}</Col>
-      </Row>
-      <Row>
-        <Col span={LABEL_SPAN}><Text strong>Command</Text></Col>
-        <Col span={12 - LABEL_SPAN}>{data.Config?.Cmd?.join(' ')}</Col>
-      </Row>
-      <Row>
-        <Col span={LABEL_SPAN}><Text strong>Entrypoint</Text></Col>
-        <Col span={12 - LABEL_SPAN}>{data.Config?.Entrypoint}</Col>
-      </Row>
-      <Row>
-        <Col span={LABEL_SPAN}><Text strong>Working dir</Text></Col>
-        <Col span={12 - LABEL_SPAN}>{data.Config?.WorkingDir || 'No set'}</Col>
-      </Row>
-      <Row>
-        <Col span={LABEL_SPAN}><Text strong>Size</Text></Col>
-        <Col span={12 - LABEL_SPAN}>{formatBytes(data.Size ?? 0)}</Col>
-      </Row>
-      {data.Created && <Row>
-        <Col span={LABEL_SPAN}><Text strong>Created</Text></Col>
-        <Col span={12 - LABEL_SPAN}>{(new Date(data.Created).toLocaleString())}</Col>
-      </Row>}
-      <Row>
-        <Col span={LABEL_SPAN}><Text strong>Environments</Text></Col>
-        <Col span={12 - LABEL_SPAN}>
-          <Flex vertical gap={marginXS}>
-          {(data.Config?.Env ?? []).map(env => (
-            <Tag key={env} style={{width: 'fit-content'}}>{env}</Tag>))}
-          </Flex>
-        </Col>
-      </Row>
-      <Row>
-        <Col span={LABEL_SPAN}><Text strong>Exposed ports</Text></Col>
-        <Col span={12 - LABEL_SPAN}>
-          {(Object.keys(data.Config?.ExposedPorts ?? {})).map(port => (
-            <Tag key={port} style={{width: 'fit-content'}}>{port}</Tag>))}
-        </Col>
-      </Row>
-      <Row>
-        <Col span={LABEL_SPAN}><Text strong>Labels</Text></Col>
-        <Col span={12 - LABEL_SPAN}>
-          <Flex vertical gap={marginXS}>
-            {Object.entries(data.Config?.Labels ?? {}).map(([key, value]) => (
-              <Tag key={key} style={{width: 'fit-content'}}>{`${key} = ${value}`}</Tag>))}
-          </Flex>
-        </Col>
-      </Row>
-    </Flex>
-  )
+  return <OverviewObject
+    data={data}
+    fieldConfigs={fieldConfigs}  
+  />
 }
 
 

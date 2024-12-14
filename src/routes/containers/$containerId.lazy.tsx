@@ -1,5 +1,5 @@
 import { createLazyFileRoute } from '@tanstack/react-router'
-import { Tabs, Typography, theme, Flex, Row, Col, Tag } from 'antd';
+import { Tabs } from 'antd';
 import React, { useEffect, useRef } from 'react';
 import { ContainerInspectResponse } from '../../api/docker-engine';
 import { useAtom } from 'jotai';
@@ -7,10 +7,8 @@ import { containerApi, focusedContainerAtom, focusedContainerIdOrNameAtom } from
 import { formatBytes } from '../../utils';
 import { headingAtom } from '../../atoms/common';
 import ReactJson from 'react-json-view';
-import { ContainerShell } from '../../components';
+import { ContainerShell, OverviewObjectProps, OverviewObject } from '../../components';
 
-
-const { Text } = Typography;
 
 function Page() {
   const {params: {containerId}} = Route.useMatch();
@@ -57,75 +55,63 @@ function Page() {
 }
 
 
-const LABEL_SPAN = 3;
-
-
 const OverviewTab: React.FC<{data: ContainerInspectResponse}> = ({data}) => {
-  const {token: {marginSM, marginXS}} = theme.useToken();
+  const fieldConfig: OverviewObjectProps<ContainerInspectResponse>['fieldConfigs'] = [
+    {
+      name: 'Name',
+      getValue: data => data.Name?.slice(1),
+    },
+    {
+      name: 'Image',
+    },
+    {
+      name: 'Command',
+      getValue: data => data.Config?.Cmd,
+    },
+    {
+      name: 'Args',
+    },
+    {
+      name: 'Status',
+      getValue: data => data.State?.Status,
+    },
+    {
+      name: 'Hostname',
+      getValue: data => data.Config?.Hostname,
+    },
+    {
+      name: 'Port bindings',
+      getValue: data => Array.from(Object.entries(data.HostConfig?.PortBindings ?? {}).entries()).map(([, [containerPort, value]]) => (
+        value ? `${containerPort.split('/')[0]} -> ${value[0].HostPort}` : null
+      )),
+    },
+    {
+      name: 'Working dir',
+      getValue: data => data.Config?.WorkingDir,
+    },
+    {
+      name: 'Network mode',
+      getValue: data => data.HostConfig?.NetworkMode,
+    },
+    {
+      name: 'Created',
+      getValue: data => data.Created ? new Date(data.Created).toLocaleString() : null,
+    },
+    {
+      name: 'Environments',
+      getValue: data => Object.values(data.Config?.Env ?? []),
+    },
+    {
+      name: 'Memory',
+      getValue: data => data.HostConfig?.Memory === 0 ? 'unlimited' : formatBytes(data.HostConfig?.Memory ?? 0),
+    },
+    {
+      name: 'CPU quotas',
+      getValue: data => data.HostConfig?.CpuQuota === 0 ? 'unlimited' : data.HostConfig?.CpuQuota,
+    }
+  ];
 
-  return (
-    <Flex gap={marginSM} vertical>
-      <Row>
-        <Col span={LABEL_SPAN}><Text strong>Name</Text></Col>
-        <Col span={12 - LABEL_SPAN}>{data.Name?.slice(1)}</Col>
-      </Row>
-      <Row>
-        <Col span={LABEL_SPAN}><Text strong>Command</Text></Col>
-        <Col span={12 - LABEL_SPAN}>{data.Config?.Cmd}</Col>
-      </Row>
-      <Row>
-        <Col span={LABEL_SPAN}><Text strong>Args</Text></Col>
-        <Col span={12 - LABEL_SPAN}>{data.Args?.join(' ')}</Col>
-      </Row>
-      <Row>
-        <Col span={LABEL_SPAN}><Text strong>Status</Text></Col>
-        <Col span={12 - LABEL_SPAN}>{data.State?.Status}</Col>
-      </Row>
-      <Row>
-        <Col span={LABEL_SPAN}><Text strong>Hostname</Text></Col>
-        <Col span={12 - LABEL_SPAN}>{data.Config?.Hostname}</Col>
-      </Row>
-      <Row>
-        <Col span={LABEL_SPAN}><Text strong>Port bindings</Text></Col>
-        <Col span={12 - LABEL_SPAN}>
-          <Flex vertical gap={marginXS}>{
-            Array.from(Object.entries(data.HostConfig?.PortBindings ?? {}).entries()).map(([, [containerPort, value]]) => (
-              value ? <Tag key={`${containerPort}${value[0].HostPort}`} style={{width: 'fit-content'}}>{`${containerPort.split('/')[0]}:${value[0].HostPort}`}</Tag> : null
-            ))
-          }</Flex>
-        </Col>
-      </Row>
-      <Row>
-        <Col span={LABEL_SPAN}><Text strong>Working dir</Text></Col>
-        <Col span={12 - LABEL_SPAN}>{data.Config?.WorkingDir || 'No set'}</Col>
-      </Row>
-      <Row>
-        <Col span={LABEL_SPAN}><Text strong>Network mode</Text></Col>
-        <Col span={12 - LABEL_SPAN}>{data.HostConfig?.NetworkMode}</Col>
-      </Row>
-      {data.Created && <Row>
-        <Col span={LABEL_SPAN}><Text strong>Created</Text></Col>
-        <Col span={12 - LABEL_SPAN}>{(new Date(data.Created).toLocaleString())}</Col>
-      </Row>}
-      <Row>
-        <Col span={LABEL_SPAN}><Text strong>Environments</Text></Col>
-        <Col span={12 - LABEL_SPAN}>
-          <Flex vertical gap={marginXS}>
-          {(data.Config?.Env ?? []).map(env => (
-            <Tag key={env} style={{width: 'fit-content'}}>{env}</Tag>))}
-          </Flex>
-        </Col>
-      </Row>
-      <Row>
-        <Col span={LABEL_SPAN}><Text strong>Memory</Text></Col>
-        <Col span={12 - LABEL_SPAN}>{data.HostConfig?.Memory === 0 ? 'Unlimited' : formatBytes(data.HostConfig?.Memory ?? 0)}</Col>
-      </Row>
-      <Row>
-        <Col span={LABEL_SPAN}><Text strong>CPU Quota</Text></Col>
-        <Col span={12 - LABEL_SPAN}>{data.HostConfig?.CpuQuota === 0 ? 'Unlimited' : `${data.HostConfig?.CpuQuota} ms`}</Col>
-      </Row>
-    </Flex>
-  )
+  return <OverviewObject data={data} fieldConfigs={fieldConfig} />
 }
 
 
@@ -177,3 +163,4 @@ const ShellTab: React.FC<{data: ContainerInspectResponse}> = ({data}) => {
 export const Route = createLazyFileRoute('/containers/$containerId')({
   component: Page,
 });
+

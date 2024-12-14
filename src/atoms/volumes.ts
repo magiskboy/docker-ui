@@ -9,12 +9,12 @@ const volumeApi = new VolumeApi(new Configuration({
   basePath: API_URL,
 }));
 
-export const volumeInspectorNameAtom = atom('');
+export const focusedVolumeNameAtom = atom('');
 
-export const volumeInspectorAtom = atomWithQuery((get) => ({
-  queryKey: ['volumeInspector', get(volumeInspectorNameAtom)],
+export const focusedVolumeAtom = atomWithQuery((get) => ({
+  queryKey: ['volumeInspector', get(focusedVolumeNameAtom)],
   queryFn: async () => {
-    const response = await volumeApi.volumeInspect({ name: get(volumeInspectorNameAtom) });
+    const response = await volumeApi.volumeInspect({ name: get(focusedVolumeNameAtom) });
     return response.data;
   },
 }))

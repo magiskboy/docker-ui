@@ -21,6 +21,7 @@ const VolumesIndexLazyImport = createFileRoute('/volumes/')()
 const NetworksIndexLazyImport = createFileRoute('/networks/')()
 const ImagesIndexLazyImport = createFileRoute('/images/')()
 const ContainersIndexLazyImport = createFileRoute('/containers/')()
+const VolumesNameLazyImport = createFileRoute('/volumes/$name')()
 const NetworksNameLazyImport = createFileRoute('/networks/$name')()
 const ImagesImageNameLazyImport = createFileRoute('/images/$imageName')()
 const ContainersContainerIdLazyImport = createFileRoute(
@@ -62,6 +63,12 @@ const ContainersIndexLazyRoute = ContainersIndexLazyImport.update({
 } as any).lazy(() =>
   import('./routes/containers/index.lazy').then((d) => d.Route),
 )
+
+const VolumesNameLazyRoute = VolumesNameLazyImport.update({
+  id: '/volumes/$name',
+  path: '/volumes/$name',
+  getParentRoute: () => rootRoute,
+} as any).lazy(() => import('./routes/volumes/$name.lazy').then((d) => d.Route))
 
 const NetworksNameLazyRoute = NetworksNameLazyImport.update({
   id: '/networks/$name',
@@ -119,6 +126,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof NetworksNameLazyImport
       parentRoute: typeof rootRoute
     }
+    '/volumes/$name': {
+      id: '/volumes/$name'
+      path: '/volumes/$name'
+      fullPath: '/volumes/$name'
+      preLoaderRoute: typeof VolumesNameLazyImport
+      parentRoute: typeof rootRoute
+    }
     '/containers/': {
       id: '/containers/'
       path: '/containers'
@@ -157,6 +171,7 @@ export interface FileRoutesByFullPath {
   '/containers/$containerId': typeof ContainersContainerIdLazyRoute
   '/images/$imageName': typeof ImagesImageNameLazyRoute
   '/networks/$name': typeof NetworksNameLazyRoute
+  '/volumes/$name': typeof VolumesNameLazyRoute
   '/containers': typeof ContainersIndexLazyRoute
   '/images': typeof ImagesIndexLazyRoute
   '/networks': typeof NetworksIndexLazyRoute
@@ -168,6 +183,7 @@ export interface FileRoutesByTo {
   '/containers/$containerId': typeof ContainersContainerIdLazyRoute
   '/images/$imageName': typeof ImagesImageNameLazyRoute
   '/networks/$name': typeof NetworksNameLazyRoute
+  '/volumes/$name': typeof VolumesNameLazyRoute
   '/containers': typeof ContainersIndexLazyRoute
   '/images': typeof ImagesIndexLazyRoute
   '/networks': typeof NetworksIndexLazyRoute
@@ -180,6 +196,7 @@ export interface FileRoutesById {
   '/containers/$containerId': typeof ContainersContainerIdLazyRoute
   '/images/$imageName': typeof ImagesImageNameLazyRoute
   '/networks/$name': typeof NetworksNameLazyRoute
+  '/volumes/$name': typeof VolumesNameLazyRoute
   '/containers/': typeof ContainersIndexLazyRoute
   '/images/': typeof ImagesIndexLazyRoute
   '/networks/': typeof NetworksIndexLazyRoute
@@ -193,6 +210,7 @@ export interface FileRouteTypes {
     | '/containers/$containerId'
     | '/images/$imageName'
     | '/networks/$name'
+    | '/volumes/$name'
     | '/containers'
     | '/images'
     | '/networks'
@@ -203,6 +221,7 @@ export interface FileRouteTypes {
     | '/containers/$containerId'
     | '/images/$imageName'
     | '/networks/$name'
+    | '/volumes/$name'
     | '/containers'
     | '/images'
     | '/networks'
@@ -213,6 +232,7 @@ export interface FileRouteTypes {
     | '/containers/$containerId'
     | '/images/$imageName'
     | '/networks/$name'
+    | '/volumes/$name'
     | '/containers/'
     | '/images/'
     | '/networks/'
@@ -225,6 +245,7 @@ export interface RootRouteChildren {
   ContainersContainerIdLazyRoute: typeof ContainersContainerIdLazyRoute
   ImagesImageNameLazyRoute: typeof ImagesImageNameLazyRoute
   NetworksNameLazyRoute: typeof NetworksNameLazyRoute
+  VolumesNameLazyRoute: typeof VolumesNameLazyRoute
   ContainersIndexLazyRoute: typeof ContainersIndexLazyRoute
   ImagesIndexLazyRoute: typeof ImagesIndexLazyRoute
   NetworksIndexLazyRoute: typeof NetworksIndexLazyRoute
@@ -236,6 +257,7 @@ const rootRouteChildren: RootRouteChildren = {
   ContainersContainerIdLazyRoute: ContainersContainerIdLazyRoute,
   ImagesImageNameLazyRoute: ImagesImageNameLazyRoute,
   NetworksNameLazyRoute: NetworksNameLazyRoute,
+  VolumesNameLazyRoute: VolumesNameLazyRoute,
   ContainersIndexLazyRoute: ContainersIndexLazyRoute,
   ImagesIndexLazyRoute: ImagesIndexLazyRoute,
   NetworksIndexLazyRoute: NetworksIndexLazyRoute,
@@ -256,6 +278,7 @@ export const routeTree = rootRoute
         "/containers/$containerId",
         "/images/$imageName",
         "/networks/$name",
+        "/volumes/$name",
         "/containers/",
         "/images/",
         "/networks/",
@@ -273,6 +296,9 @@ export const routeTree = rootRoute
     },
     "/networks/$name": {
       "filePath": "networks/$name.lazy.tsx"
+    },
+    "/volumes/$name": {
+      "filePath": "volumes/$name.lazy.tsx"
     },
     "/containers/": {
       "filePath": "containers/index.lazy.tsx"

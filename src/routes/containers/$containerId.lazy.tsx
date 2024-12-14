@@ -129,7 +129,7 @@ const LogTab:React.FC<{data: ContainerInspectResponse}> = ({data}) => {
     if (!data.Name) return;
 
     containerApi.containerLogs({ 
-      id: data.Name.slice(1), 
+      id: data.Name, 
       follow: true, 
       stdout: true, 
       stderr: true,
@@ -154,7 +154,7 @@ const LogTab:React.FC<{data: ContainerInspectResponse}> = ({data}) => {
 const ShellTab: React.FC<{data: ContainerInspectResponse}> = ({data}) => {
   return (
     <>
-      <ContainerShell name={data.Name!.slice(1)} />
+      <ContainerShell name={data.Name!} />
     </>
   )
 }

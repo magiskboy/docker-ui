@@ -5,6 +5,7 @@ import { handleAxiosError } from '../utils/errors';
 import { atom } from 'jotai';
 import { RunContainerOptions } from '../routes/images/-components/run-container-modal';
 
+
 export const containerApi = new ContainerApi(new Configuration({
   basePath: API_URL,
 }));
@@ -18,7 +19,10 @@ export const focusedContainerAtom = atomWithQuery((get) => ({
       return null;
     }
     const response = await containerApi.containerInspect({ id: id as string });
-    return response.data;
+    return {
+      ...response.data,
+      Name: response.data.Name?.slice(1),
+    }
   }
 }));
 

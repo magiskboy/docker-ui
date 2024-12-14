@@ -3,13 +3,10 @@ import { Terminal } from '@xterm/xterm';
 import { FitAddon } from '@xterm/addon-fit';
 import { WebglAddon } from '@xterm/addon-webgl';
 import { API_URL } from '../constants';
-import { ContainerInspectResponse } from '../api/docker-engine';
-import { containerApi } from '../atoms/containers';
 
 
 export const ContainerInteraction: React.FC<Props> = ({name}) => {
   const [instance, setInstance] = useState<Terminal>()
-  const [container, setContainer] = useState<ContainerInspectResponse>();
   const terminalRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -25,10 +22,6 @@ export const ContainerInteraction: React.FC<Props> = ({name}) => {
 
   useEffect(() => {
     if (!name) return;
-
-    containerApi.containerInspect({id: name}).then(response => {
-      setContainer(response.data);
-    });
 
   }, [name]);
 

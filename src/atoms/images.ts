@@ -11,7 +11,7 @@ export const imageApi = new ImageApi(new Configuration({
   basePath: API_URL,
 }));
 
-export const imageInspectorNameAtom = atom('');
+export const focusedImageIdOrNameAtom = atom('');
 
 export const imagesAtom = atomWithQuery((get) => ({
   queryKey: ['images'],
@@ -37,8 +37,8 @@ export const imagesAtom = atomWithQuery((get) => ({
   refetchInterval: 5000,
 }));
 
-export const imageInspectorAtom = atomWithQuery((get) => ({
-  queryKey: ['imageInspector', get(imageInspectorNameAtom)],
+export const focusedImageAtom = atomWithQuery((get) => ({
+  queryKey: ['imageInspector', get(focusedImageIdOrNameAtom)],
   queryFn: async ({ queryKey: [,name]}) => {
     const res = await imageApi.imageInspect({ name: name as string });
     return res.data;

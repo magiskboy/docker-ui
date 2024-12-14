@@ -1,7 +1,7 @@
 import { createLazyFileRoute, Link, useNavigate } from '@tanstack/react-router'
 import { useAtom, useAtomValue } from 'jotai';
 
-import { containersAtom, restartContainerAtom, startContainerAtom, stopContainerAtom, deleteContainerAtom, containerInspectorIdAtom, containerInspectorAtom } from '../../atoms/containers';
+import { containersAtom, restartContainerAtom, startContainerAtom, stopContainerAtom, deleteContainerAtom, focusedContainerIdOrNameAtom, focusedContainerAtom } from '../../atoms/containers';
 import { Divider, Table, Flex, Button, theme, Popconfirm } from 'antd';
 import type { TableColumnType } from 'antd';
 import ButtonGroup from 'antd/es/button/button-group';
@@ -30,8 +30,8 @@ function Page() {
   const { mutate: startContainer } = useAtomValue(startContainerAtom);
   const { mutate: deleteContainer } = useAtomValue(deleteContainerAtom);
   const { token: {paddingXS} } = theme.useToken();
-  const [containerInspectorId, setContainerInspectorId] = useAtom(containerInspectorIdAtom);
-  const [{ data: containerInspector }] = useAtom(containerInspectorAtom);
+  const [containerInspectorId, setContainerInspectorId] = useAtom(focusedContainerIdOrNameAtom);
+  const [{ data: containerInspector }] = useAtom(focusedContainerAtom);
   const [showInspectorModal, setShowInspectorModal] = useState(false);
   const navigate = useNavigate();
 

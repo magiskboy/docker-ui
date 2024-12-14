@@ -9,10 +9,10 @@ export const containerApi = new ContainerApi(new Configuration({
   basePath: API_URL,
 }));
 
-export const containerInspectorIdAtom = atom('');
+export const focusedContainerIdOrNameAtom = atom('');
 
-export const containerInspectorAtom = atomWithQuery((get) => ({
-  queryKey: ['containerInspector', get(containerInspectorIdAtom)],
+export const focusedContainerAtom = atomWithQuery((get) => ({
+  queryKey: ['focusedContainerAtom', get(focusedContainerIdOrNameAtom)],
   queryFn: async ({ queryKey: [, id]}) => {
     if (!id) {
       return null;

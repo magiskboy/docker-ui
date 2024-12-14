@@ -1,6 +1,6 @@
 import { createLazyFileRoute } from '@tanstack/react-router'
 import { useAtom } from 'jotai';
-import { imageApi, imageInspectorAtom, imageInspectorNameAtom } from '../../atoms/images';
+import { imageApi, focusedImageAtom, focusedImageIdOrNameAtom } from '../../atoms/images';
 import React, { useEffect, useState } from 'react';
 import { Typography, Tag, Flex, theme, Tabs, Row, Col, Table, TableColumnType, Tooltip} from 'antd';
 import { HistoryResponseItem, ImageInspect } from '../../api/docker-engine';
@@ -12,8 +12,8 @@ const { Text } = Typography;
 
 function Page() {
   const { params: {imageName} } = Route.useMatch();
-  const [, setImageInspectorName] = useAtom(imageInspectorNameAtom);
-  const [{data: imageInspector}] = useAtom(imageInspectorAtom);
+  const [, setImageInspectorName] = useAtom(focusedImageIdOrNameAtom);
+  const [{data: imageInspector}] = useAtom(focusedImageAtom);
 
   useEffect(() => {
     setImageInspectorName(imageName); 

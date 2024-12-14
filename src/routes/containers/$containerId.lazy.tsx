@@ -3,7 +3,7 @@ import { Tabs, Typography, theme, Flex, Row, Col, Tag } from 'antd';
 import React, { useEffect, useRef } from 'react';
 import { ContainerInspectResponse } from '../../api/docker-engine';
 import { useAtom } from 'jotai';
-import { containerApi, containerInspectorAtom, containerInspectorIdAtom } from '../../atoms/containers';
+import { containerApi, focusedContainerAtom, focusedContainerIdOrNameAtom } from '../../atoms/containers';
 import { formatBytes } from '../../utils';
 import { headingAtom } from '../../atoms/common';
 import ReactJson from 'react-json-view';
@@ -14,8 +14,8 @@ const { Text } = Typography;
 
 function Page() {
   const {params: {containerId}} = Route.useMatch();
-  const [{data: containerInspector} ] = useAtom(containerInspectorAtom);
-  const [,setContainerInspectorId] = useAtom(containerInspectorIdAtom);
+  const [{data: containerInspector} ] = useAtom(focusedContainerAtom);
+  const [,setContainerInspectorId] = useAtom(focusedContainerIdOrNameAtom);
   const [,setHeading] = useAtom(headingAtom);
 
   useEffect(() => {

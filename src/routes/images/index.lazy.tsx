@@ -22,9 +22,9 @@ import {
 } from '../../utils'
 import {
   deleteImagesAtoms,
-  imageInspectorAtom,
+  focusedImageAtom,
   imagesAtom,
-  imageInspectorNameAtom,
+  focusedImageIdOrNameAtom,
 } from '../../atoms/images'
 import ButtonGroup from 'antd/es/button/button-group'
 import { AiOutlineDelete } from 'react-icons/ai'
@@ -56,9 +56,9 @@ function Page() {
     token: { marginXS },
   } = theme.useToken()
   const [imageInspectorName, setImageInspectorName] = useAtom(
-    imageInspectorNameAtom,
+    focusedImageIdOrNameAtom,
   )
-  const [{ data: imageInspector }] = useAtom(imageInspectorAtom)
+  const [{ data: imageInspector }] = useAtom(focusedImageAtom)
   const [imageToRun, setImageToRun] = useState('');
   const [{mutate: createContainer}] = useAtom(createContainerAtom);
   const [{mutate: startContainer}] = useAtom(startContainerAtom);

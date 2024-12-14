@@ -18,7 +18,7 @@ export const OverviewObject: React.FC<OverviewObjectProps> = ({data, fieldConfig
             return field.render(value);
           }
 
-          if (!value) {
+          if (value === undefined) {
             return (
               <Row key={field.name}>
                 <Col span={LABEL_SPAN}><Text strong>{field.label ?? field.name}</Text></Col>
@@ -44,7 +44,7 @@ export const OverviewObject: React.FC<OverviewObjectProps> = ({data, fieldConfig
           return (
             <Row key={field.name}>
               <Col span={LABEL_SPAN}><Text strong>{field.name ?? field.label}</Text></Col>
-              <Col span={12 - LABEL_SPAN}>{value}</Col>
+              <Col span={12 - LABEL_SPAN}>{String(value)}</Col>
             </Row>
           )
         })
@@ -62,7 +62,7 @@ interface FieldConfig<T> {
 }
 
 
-export interface OverviewObjectProps<T> {
+export interface OverviewObjectProps<T = object> {
   data: T;
   fieldConfigs: FieldConfig<T>[];
 }

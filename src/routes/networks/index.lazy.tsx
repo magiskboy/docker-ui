@@ -1,8 +1,8 @@
-import { createLazyFileRoute } from '@tanstack/react-router'
+import { createLazyFileRoute, Link } from '@tanstack/react-router'
 import { useAtom, useAtomValue } from 'jotai'
-import { networkInspectorAtom, networkInspectorIdAtom, networksAtom, deleteNetworAtom } from '../../atoms/networks'
+import { focusedNetworkAtom, focusedNetworkIdOrNameAtom, networksAtom, deleteNetworAtom } from '../../atoms/networks'
 import { Divider, Flex, Table, type TableColumnType, Button, Badge, Checkbox, theme, notification, Popconfirm } from 'antd';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { handleAxiosError } from '../../utils/errors';
 import ButtonGroup from 'antd/es/button/button-group';
 import { IoIosRefresh } from 'react-icons/io';
@@ -19,9 +19,10 @@ export const Route = createLazyFileRoute('/networks/')({
 function Page() {
   const { data: networks, refetch: refetchNetworks, isError: isFetchNetworksError, error: fetchNetworksError } = useAtomValue(networksAtom);
   const { token: {marginXS} } = theme.useToken();
-  const [networkInspectorId, setNetworkInspectorId] = useAtom(networkInspectorIdAtom);
-  const [{ data: networkInspector }] = useAtom(networkInspectorAtom);
+  const [networkInspectorId, setNetworkInspectorId] = useAtom(focusedNetworkIdOrNameAtom);
+  const [{ data: networkInspector }] = useAtom(focusedNetworkAtom);
   const [{mutate: deleteNetwork}] = useAtom(deleteNetworAtom);
+  const [showInspector, setShowInspector] = useState(false);
 
   useEffect(() => {
     if (isFetchNetworksError) {
@@ -58,6 +59,9 @@ function Page() {
       dataIndex: 'name',
       title: 'Name',
       sorter: (a, b) => compareStrings(a.name ?? '', b.name ?? ''),
+      render: (_, record)=> (
+        <Link to='/networks/$name' params={{name: record.name || 'null'}}>{record.name ?? 'null'}</Link>
+      )
     },
     {
       key: 'scope',
@@ -122,7 +126,10 @@ function Page() {
       title: 'Actions',
       render: (_, record) => (
         <Flex gap={marginXS}>
-          <Button icon={<BsFiletypeJson />} onClick={() => setNetworkInspectorId(record.name ?? record.id ?? '')}/>
+          <Button icon={<BsFiletypeJson />} onClick={() => {
+            setShowInspector(true);
+            setNetworkInspectorId(record.name ?? record.id ?? '')
+          }}/>
           <Popconfirm
             title="Are you sure you want to delete this network?"
             onConfirm={() => onDeleteNetwork(record.id ?? record.name ?? '')}
@@ -147,8 +154,11 @@ function Page() {
       <InspectorModal
         title={networkInspector?.Name ?? ''}
         content={networkInspector!}
-        open={!!networkInspectorId}
-        onClose={() => setNetworkInspectorId('')}
+        open={showInspector}
+        onClose={() => {
+          setShowInspector(false);
+          setNetworkInspectorId('')
+        }}
       />
     </>
   )

@@ -9,10 +9,10 @@ const networkApi = new NetworkApi(new Configuration({
   basePath: API_URL,
 }));
 
-export const networkInspectorIdAtom = atom('');
+export const focusedNetworkIdOrNameAtom = atom('');
 
-export const networkInspectorAtom = atomWithQuery((get) => ({
-  queryKey: ['networkInspector', get(networkInspectorIdAtom)],
+export const focusedNetworkAtom = atomWithQuery((get) => ({
+  queryKey: ['networkInspector', get(focusedNetworkIdOrNameAtom)],
   queryFn: async ({ queryKey: [, id]}) => {
     const res = await networkApi.networkInspect({id: id as string});
     return res.data;

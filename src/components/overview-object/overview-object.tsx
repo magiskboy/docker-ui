@@ -15,7 +15,7 @@ export const OverviewObject: React.FC<OverviewObjectProps> = ({data, fieldConfig
           const value = field.getValue ? field.getValue(data) : data[field.name];
 
           if (field.render) {
-            return field.render(value);
+            return field.render(value, data);
           }
 
           if (value === undefined) {
@@ -58,7 +58,7 @@ interface FieldConfig<T> {
   name: string;
   label?: string;
   getValue?: (data: T) => unknown;
-  render?: (value: unknown) => React.ReactNode;
+  render?: (value: unknown, data: T) => React.ReactNode;
 }
 
 

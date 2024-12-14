@@ -2,10 +2,9 @@ import { createLazyFileRoute, Link } from '@tanstack/react-router'
 import { useAtom } from 'jotai';
 import { focusedNetworkAtom, focusedNetworkIdOrNameAtom } from '../../atoms/networks';
 import { useEffect } from 'react';
-import { OverviewObjectProps, OverviewObject } from '../../components';
-import type { Network, ImageInspect, Driver, IPAM } from '../../api/docker-engine';
+import { OverviewObjectProps, OverviewObject, JsonViewer } from '../../components';
+import type { Network, ImageInspect } from '../../api/docker-engine';
 import { Tabs, Row, Col, Typography, Tooltip } from 'antd';
-import ReactJson from 'react-json-view';
 
 const { Text } = Typography;
 
@@ -118,8 +117,6 @@ const OverviewTab: React.FC<{data: Network}> = ({data}) => {
 
 
 const JSONTab: React.FC<{content: ImageInspect}> = ({content}) => {
-  return (
-    <ReactJson src={content} displayDataTypes={false} />
-  )
+  return <JsonViewer fetcher={() => Promise.resolve(content)} />;
 }
 

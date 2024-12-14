@@ -90,6 +90,9 @@ export const RunContainerModal: React.FC<Props> = ({ image, open, onRun, onCance
         <Form.Item label="Name">
           <Input type='text' value={options.name} onChange={(e) => setOptions({ ...options, name: e.target.value })} />
         </Form.Item>
+        <Form.Item label="Command">
+          <Input type='text' placeholder='/bin/sh' value={options.cmd} onChange={(e) => setOptions({ ...options, cmd: e.target.value })} />
+        </Form.Item>
         <Form.Item label="Image">
           <Select
             options={images?.map((image) => ({ label: image.RepoTags[0], value: image.RepoTags[0] }))}
@@ -133,6 +136,7 @@ interface EnvironmentVariable {
 
 export interface RunContainerOptions {
   name: string
+  cmd?: string,
   image: ImageInspect;
   ports: PortMapping[];
   volumes: { host: string, container: string }[];

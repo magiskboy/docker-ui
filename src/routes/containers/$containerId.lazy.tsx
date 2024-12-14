@@ -1,13 +1,15 @@
-import { createLazyFileRoute } from '@tanstack/react-router'
-import { Tabs } from 'antd';
+import { createLazyFileRoute, Link } from '@tanstack/react-router'
+import { Col, Row, Tabs, Typography } from 'antd';
 import React, { useEffect, useRef } from 'react';
 import { ContainerInspectResponse } from '../../api/docker-engine';
 import { useAtom } from 'jotai';
 import { containerApi, focusedContainerAtom, focusedContainerIdOrNameAtom } from '../../atoms/containers';
 import { formatBytes } from '../../utils';
 import { headingAtom } from '../../atoms/common';
-import ReactJson from 'react-json-view';
-import { ContainerShell, OverviewObjectProps, OverviewObject } from '../../components';
+import { ContainerShell, OverviewObjectProps, OverviewObject, JsonViewer } from '../../components';
+
+
+const { Text } = Typography;
 
 
 function Page() {
@@ -59,10 +61,16 @@ const OverviewTab: React.FC<{data: ContainerInspectResponse}> = ({data}) => {
   const fieldConfig: OverviewObjectProps<ContainerInspectResponse>['fieldConfigs'] = [
     {
       name: 'Name',
-      getValue: data => data.Name?.slice(1),
     },
     {
       name: 'Image',
+      getValue: data => data.Config?.Image,
+      render: (value, data) => (
+        <Row key="Image">
+          <Col span={3}><Text strong>Image</Text></Col>
+          <Col span={9}><Link to='/images/$imageName' params={{ imageName: data.Config?.Image as string}}>{value}</Link></Col>
+        </Row>
+      )
     },
     {
       name: 'Command',
@@ -116,9 +124,7 @@ const OverviewTab: React.FC<{data: ContainerInspectResponse}> = ({data}) => {
 
 
 const JSONTab: React.FC<{data: ContainerInspectResponse}> = ({data}) => {
-  return (
-    <ReactJson src={data} displayDataTypes={false} />
-  )  
+  return <JsonViewer fetcher={() => Promise.resolve(data)} />
 }
 
 
@@ -152,11 +158,7 @@ const LogTab:React.FC<{data: ContainerInspectResponse}> = ({data}) => {
 }
 
 const ShellTab: React.FC<{data: ContainerInspectResponse}> = ({data}) => {
-  return (
-    <>
-      <ContainerShell name={data.Name!} />
-    </>
-  )
+  return <ContainerShell name={data.Name!} />
 }
 
 

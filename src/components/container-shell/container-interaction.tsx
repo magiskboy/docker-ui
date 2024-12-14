@@ -4,11 +4,14 @@ import { FitAddon } from '@xterm/addon-fit';
 import { WebglAddon } from '@xterm/addon-webgl';
 import styles from './container-shell.module.css';
 import { TerminalController } from './terminal-controller';
+import { useAtom } from 'jotai';
+import { focusedContainerAtom } from '../../atoms/containers';
 
 
 export const ContainerShell: React.FC<Props> = ({name}) => {
   const [instance, setInstance] = useState<Terminal>()
   const terminalRef = useRef<HTMLDivElement>(null);
+  const [{data: focusedContainer}] = useAtom(focusedContainerAtom);
 
   useEffect(() => {
       const newInstance = new Terminal({
@@ -32,14 +35,14 @@ export const ContainerShell: React.FC<Props> = ({name}) => {
       instance.focus();
       fitAddon.fit();
 
-      const terminalController = new TerminalController(instance, name!);
+      const terminalController = new TerminalController(instance, name!, focusedContainer);
       terminalController.initialize();
     }
 
     return () => {
       instance?.dispose();
     }
-  }, [instance, name])
+  }, [instance, name, focusedContainer])
  
 
   return (

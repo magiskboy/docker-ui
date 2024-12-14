@@ -1,12 +1,14 @@
-import { createLazyFileRoute } from '@tanstack/react-router'
+import { createLazyFileRoute, Link } from '@tanstack/react-router'
 import { useAtom } from 'jotai';
 import { imageApi, focusedImageAtom, focusedImageIdOrNameAtom } from '../../atoms/images';
 import React, { useEffect, useState } from 'react';
-import { Tabs, Table, TableColumnType, Tooltip} from 'antd';
+import { Tabs, Table, TableColumnType, Tooltip, Row, Typography, Col } from 'antd';
 import { HistoryResponseItem, ImageInspect } from '../../api/docker-engine';
-import ReactJson from 'react-json-view'
 import { formatBytes } from '../../utils';
-import { OverviewObject, OverviewObjectProps } from '../../components';
+import { OverviewObject, OverviewObjectProps, JsonViewer } from '../../components';
+
+
+const { Text } = Typography;
 
 
 function Page() {
@@ -25,7 +27,6 @@ function Page() {
   }
 
   return (
-    <>
       <Tabs 
         activeKey={activeTab}
         onChange={handleChangeTab}
@@ -47,8 +48,6 @@ function Page() {
           }
         ]}
       />
-
-    </>
   )
 }
 
@@ -81,6 +80,26 @@ const OverviewTab: React.FC<{data: ImageInspect}> = ({data}) => {
       {
         name: 'Working dir',
         getValue: d => d.Config?.WorkingDir,
+      },
+      {
+        name: 'ContainerList',
+        label: 'Containers',
+        render: (value) => {
+          return (
+            <Row key='ContainerList'>
+              <Col span={3}><Text strong>Containers</Text></Col>
+              <Col span={9}>
+                {
+                  value.map(container => (
+                    <Link to='/containers/$containerId' params={{containerId: container.Names[0].slice(1)}}>
+                      {container.Names[0].slice(1)}
+                    </Link>
+                  ))
+                }
+              </Col>
+            </Row>
+          )
+        }
       },
       {
         name: 'Created',
@@ -144,8 +163,6 @@ const LayersTab: React.FC<{imageName: string}> = ({imageName}) => {
 }
 
 const JSONTab: React.FC<{content: ImageInspect}> = ({content}) => {
-  return (
-    <ReactJson src={content} displayDataTypes={false} />
-  )
+  return <JsonViewer fetcher={() => Promise.resolve(content)} />
 }
 

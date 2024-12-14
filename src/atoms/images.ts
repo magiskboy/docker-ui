@@ -1,8 +1,8 @@
 import { atomWithMutation, atomWithQuery } from 'jotai-tanstack-query';
 import _ from 'lodash';
-import { ImageApi, Configuration } from '../api/docker-engine';
+import { ImageApi, Configuration, ContainerSummary, ImageSummary } from '../api/docker-engine';
 import { API_URL } from '../constants';
-import { containersAtom } from './containers';
+import { containerApi, containersAtom } from './containers';
 import { handleAxiosError } from '../utils/errors';
 import { atom } from 'jotai';
 
@@ -15,7 +15,7 @@ export const focusedImageIdOrNameAtom = atom('');
 
 export const imagesAtom = atomWithQuery((get) => ({
   queryKey: ['images'],
-  queryFn: async () => {
+  queryFn: async (): Promise<Array<ImageSummary & {ContainerList?: ContainerSummary[]}>> => {
     const res = await imageApi.imageList();
     const { data: containers, error } = get(containersAtom);
 
@@ -31,7 +31,10 @@ export const imagesAtom = atomWithQuery((get) => ({
       }
     }
 
-    return res.data;
+    return res.data.map(image => ({
+      ...image,
+      ContainerList: containersByImages[image.Id],
+    }))
   },
   refetchIntervalInBackground: true,
   refetchInterval: 5000,
@@ -41,9 +44,18 @@ export const focusedImageAtom = atomWithQuery((get) => ({
   queryKey: ['imageInspector', get(focusedImageIdOrNameAtom)],
   queryFn: async ({ queryKey: [,name]}) => {
     const res = await imageApi.imageInspect({ name: name as string });
-    return res.data;
+    const containers = (await containerApi.containerList({
+      filters: JSON.stringify({
+        ancestor: [name],
+      })
+    })).data;
+    return {
+      ...res.data,
+      ContainerList: containers,
+    }
   },
 }));
+
 
 export const deleteImagesAtoms = atomWithMutation(() => ({
   mutationKey: ['deleteImage'],
@@ -53,4 +65,5 @@ export const deleteImagesAtoms = atomWithMutation(() => ({
   onError: (error: Error) => {
     handleAxiosError(error, 'Error deleting image');
   }
-}))
+}));
+

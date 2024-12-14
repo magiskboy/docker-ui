@@ -1,5 +1,5 @@
 import { atomWithMutation, atomWithQuery} from 'jotai-tanstack-query';
-import { ContainerApi, Configuration } from '../api/docker-engine';
+import { ContainerApi, Configuration, ContainerInspectResponse } from '../api/docker-engine';
 import { API_URL } from '../constants';
 import { handleAxiosError } from '../utils/errors';
 import { atom } from 'jotai';
@@ -22,7 +22,7 @@ export const focusedContainerAtom = atomWithQuery((get) => ({
     return {
       ...response.data,
       Name: response.data.Name?.slice(1),
-    }
+    } as ContainerInspectResponse;
   }
 }));
 
@@ -99,7 +99,8 @@ export const createContainerAtom = atomWithMutation(() => ({
         Env: envParams,
         HostConfig: {
           PortBindings: portBindings
-        }
+        },
+        Cmd: options.cmd ? options.cmd.split(' ') : undefined,
       }
     });
     return response.data;

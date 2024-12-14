@@ -69,7 +69,7 @@ wss.on('connection', (ws) => {
       const exec = await vars.container.exec({
         Cmd: data.command,
         User: 'root',
-        WorkingDir: '/',
+        WorkingDir: data.workingDir ?? '/',
         Tty: true,
         AttachStdout: true,
         AttachStdin: true,

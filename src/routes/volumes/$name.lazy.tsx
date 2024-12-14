@@ -4,8 +4,7 @@ import { createLazyFileRoute } from '@tanstack/react-router'
 import { useAtom } from 'jotai';
 import { focusedVolumeAtom, focusedVolumeNameAtom } from '../../atoms/volumes';
 import { Volume } from '../../api/docker-engine';
-import { OverviewObject, type OverviewObjectProps} from '../../components';
-import ReactJson from 'react-json-view';
+import { OverviewObject, JsonViewer, type OverviewObjectProps} from '../../components';
 
 export const Route = createLazyFileRoute('/volumes/$name')({
   component: RouteComponent,
@@ -87,7 +86,5 @@ const OverviewTab: React.FC<{data: Volume}> = ({data}) => {
 
 
 const JSONTab: React.FC<{content: Volume}> = ({content}) => {
-  return (
-    <ReactJson src={content} displayDataTypes={false} />
-  )
+  return <JsonViewer fetcher={() => Promise.resolve(content)} />
 }

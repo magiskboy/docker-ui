@@ -43,7 +43,7 @@ export const OverviewObject: React.FC<OverviewObjectProps> = ({data, fieldConfig
 
           return (
             <Row key={field.name}>
-              <Col span={LABEL_SPAN}><Text strong>{field.name ?? field.label}</Text></Col>
+              <Col span={LABEL_SPAN}><Text strong>{field.label ?? field.name}</Text></Col>
               <Col span={12 - LABEL_SPAN}>{String(value)}</Col>
             </Row>
           )

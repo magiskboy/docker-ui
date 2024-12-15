@@ -63,8 +63,8 @@ const OverviewTab: React.FC<{data: ImageInspect}> = ({data}) => {
         getValue: d => d.RepoTags?.[0],
       },
       {
-        name: 'Operating system',
-        getValue: d => `${d.Os} ${d.OsVersion}`,
+        name: 'Os',
+        label: 'Operating system',
       },
       {
         name: 'Architecture',

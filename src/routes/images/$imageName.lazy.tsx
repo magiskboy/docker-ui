@@ -142,14 +142,14 @@ const LayersTab: React.FC<{imageName: string}> = ({imageName}) => {
   const columns: TableColumnType<HistoryResponseItem>[] = [
     {
       key: 'key',
-      title: 'Created By',
+      title: 'Command',
       dataIndex: 'CreatedBy',
       ellipsis: true,
       render: (_, record) => <Tooltip placement='topLeft' title={record.CreatedBy}>{record.CreatedBy}</Tooltip>,
     },
     {
       key: 'created',
-      title: 'Created',
+      title: 'Time',
       dataIndex: 'Created',
       render: (_, record) => new Date(record.Created*1000).toLocaleString(),
     },

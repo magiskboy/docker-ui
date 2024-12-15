@@ -11,21 +11,20 @@ export class TerminalController {
     private readonly containerName: string,
     private readonly container?: ContainerInspectResponse,
   ) {
-    const host = new URL(API_URL);
-    host.protocol = 'ws';
-    this.ws = new WebSocket(host.origin);
-  }
-
-  get Terminal(): Terminal {
-    return this.terminal;
-  }
-
-  initialize() {
+    this.ws = this.createWebsocket();
     this.terminal.onData((e) => this.ws.send(JSON.stringify({
       type: 'command',
       command: e,
     })));
+  }
 
+  private createWebsocket() {
+    const host = new URL(API_URL);
+    host.protocol = 'ws';
+    return new WebSocket(host.origin);
+  }
+
+  initialize() {
     this.ws.onopen = () => {
       this.ws.send(JSON.stringify({
         type: 'start',
@@ -39,6 +38,15 @@ export class TerminalController {
       const data = JSON.parse(event.data);
       this.terminal.write(data.data);
     };
+
+    this.ws.onclose = () => {
+      this.terminal.clear();
+      this.terminal.writeln(`Connection to container ${this.containerName} closed`);
+
+      this.ws = this.createWebsocket();
+      this.initialize();
+      this.terminal.writeln(`Reconnecting to container ${this.containerName}...`);
+    }
   }
 }
 

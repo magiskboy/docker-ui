@@ -46,7 +46,9 @@ export const ContainerShell: React.FC<Props> = ({name}) => {
  
 
   return (
-    <div className={styles['container-shell']} ref={terminalRef}></div>
+    <div className={styles['container-shell']}>
+      <div className={styles['terminal']} ref={terminalRef}></div>
+    </div>
   )
 }
 

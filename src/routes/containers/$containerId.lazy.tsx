@@ -68,7 +68,14 @@ const OverviewTab: React.FC<{data: ContainerInspectResponse}> = ({data}) => {
       render: (value, data) => (
         <Row key="Image">
           <Col span={3}><Text strong>Image</Text></Col>
-          <Col span={9}><Link to='/images/$imageName' params={{ imageName: data.Config?.Image as string}}>{value}</Link></Col>
+          <Col span={24-3}>
+            <Link 
+              to='/images/$imageName' 
+              params={{ imageName: data.Config?.Image as string}}
+            >
+              {value as string}
+            </Link>
+          </Col>
         </Row>
       )
     },

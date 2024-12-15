@@ -25,7 +25,7 @@ export const ContainerShell: React.FC<Props> = ({name}) => {
   }, [terminalRef]);  // eslint-disable-line
 
   useEffect(() => {
-    if (instance && terminalRef.current) {
+    if (instance && terminalRef.current && focusedContainer) {
       const fitAddon = new FitAddon();
       const webGlAddon = new WebglAddon();
       instance.loadAddon(fitAddon);

@@ -3,7 +3,7 @@ import { useAtom } from 'jotai';
 import { imageApi, focusedImageAtom, focusedImageIdOrNameAtom } from '../../atoms/images';
 import React, { useEffect, useState } from 'react';
 import { Tabs, Table, TableColumnType, Tooltip, Row, Typography, Col } from 'antd';
-import { HistoryResponseItem, ImageInspect } from '../../api/docker-engine';
+import { ContainerSummary, HistoryResponseItem, ImageInspect } from '../../api/docker-engine';
 import { formatBytes } from '../../utils';
 import { OverviewObject, OverviewObjectProps, JsonViewer } from '../../components';
 
@@ -90,10 +90,15 @@ const OverviewTab: React.FC<{data: ImageInspect}> = ({data}) => {
               <Col span={3}><Text strong>Containers</Text></Col>
               <Col span={9}>
                 {
-                  value.map(container => (
-                    <Link to='/containers/$containerId' params={{containerId: container.Names[0].slice(1)}}>
-                      {container.Names[0].slice(1)}
-                    </Link>
+                  (value as ContainerSummary[]).map(container => (
+                    container.Names?.[0].slice(1) 
+                      ? <Link 
+                          to='/containers/$containerId' 
+                          params={{containerId: container.Names?.[0].slice(1)}}
+                        >
+                          {container.Names?.[0].slice(1)}
+                        </Link> 
+                      : 'Unknown'
                   ))
                 }
               </Col>

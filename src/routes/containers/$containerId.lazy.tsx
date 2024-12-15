@@ -1,12 +1,12 @@
 import { createLazyFileRoute, Link } from '@tanstack/react-router'
 import { Col, Row, Tabs, Typography } from 'antd';
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect } from 'react';
 import { ContainerInspectResponse } from '../../api/docker-engine';
 import { useAtom } from 'jotai';
-import { containerApi, focusedContainerAtom, focusedContainerIdOrNameAtom } from '../../atoms/containers';
+import { focusedContainerAtom, focusedContainerIdOrNameAtom } from '../../atoms/containers';
 import { formatBytes } from '../../utils';
 import { headingAtom } from '../../atoms/common';
-import { ContainerShell, OverviewObjectProps, OverviewObject, JsonViewer } from '../../components';
+import { ContainerShell, ContainerLog, OverviewObjectProps, OverviewObject, JsonViewer } from '../../components';
 
 
 const { Text } = Typography;
@@ -129,32 +129,8 @@ const JSONTab: React.FC<{data: ContainerInspectResponse}> = ({data}) => {
 
 
 const LogTab:React.FC<{data: ContainerInspectResponse}> = ({data}) => {
-  const ref = useRef<HTMLPreElement>(null);
-
-  useEffect(() => {
-    if (!data.Name) return;
-
-    containerApi.containerLogs({ 
-      id: data.Name, 
-      follow: true, 
-      stdout: true, 
-      stderr: true,
-      timestamps: false,
-    }, {
-      onDownloadProgress: (event) => {
-        const text = event.event?.target.responseText;
-        if (ref.current) {
-          ref.current.innerHTML = text;
-        }
-      }
-    });
-  }, [data.Name]);
-
-  return (
-    <div style={{height: '100%' }}>
-      <pre ref={ref} style={{ fontFamily: 'Courier' }}></pre>
-    </div>
-  )
+  const nameOrId = data.Name ?? data.Id;
+  return nameOrId ? <ContainerLog containerIdOrName={nameOrId} /> : null;
 }
 
 const ShellTab: React.FC<{data: ContainerInspectResponse}> = ({data}) => {

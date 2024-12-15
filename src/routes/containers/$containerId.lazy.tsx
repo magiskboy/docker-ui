@@ -95,7 +95,7 @@ const OverviewTab: React.FC<{data: ContainerInspectResponse}> = ({data}) => {
     },
     {
       name: 'Working dir',
-      getValue: data => data.Config?.WorkingDir,
+      getValue: data => data.Config?.WorkingDir || '/',
     },
     {
       name: 'Network mode',

@@ -19,7 +19,7 @@ export const Route = createLazyFileRoute('/networks/')({
 function Page() {
   const { data: networks, refetch: refetchNetworks, isError: isFetchNetworksError, error: fetchNetworksError } = useAtomValue(networksAtom);
   const { token: {marginXS} } = theme.useToken();
-  const [networkInspectorId, setNetworkInspectorId] = useAtom(focusedNetworkIdOrNameAtom);
+  const [, setNetworkInspectorId] = useAtom(focusedNetworkIdOrNameAtom);
   const [{ data: networkInspector }] = useAtom(focusedNetworkAtom);
   const [{mutate: deleteNetwork}] = useAtom(deleteNetworAtom);
   const [showInspector, setShowInspector] = useState(false);

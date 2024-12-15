@@ -3,16 +3,16 @@ import { Flex, Row, Col, Typography, Tag, theme } from 'antd';
 
 const { Text } = Typography;
 
-const LABEL_SPAN = 3;
 
-export const OverviewObject: React.FC<OverviewObjectProps> = ({data, fieldConfigs}) => {
-  const {token: {marginSM, marginXS}} = theme.useToken();
+export const OverviewObject: React.FC<OverviewObjectProps> = ({data, fieldConfigs, labelSpan = 3}) => {
+  const {token: {marginSM, marginXS }} = theme.useToken();
 
   return (
     <Flex gap={marginSM} vertical>
       {
         fieldConfigs.map(field => {
           const value = field.getValue ? field.getValue(data) : data[field.name];
+          const { verticalList = true } = field;
 
           if (field.render) {
             return field.render(value, data);
@@ -21,8 +21,8 @@ export const OverviewObject: React.FC<OverviewObjectProps> = ({data, fieldConfig
           if (value === undefined) {
             return (
               <Row key={field.name}>
-                <Col span={LABEL_SPAN}><Text strong>{field.label ?? field.name}</Text></Col>
-                <Col span={12 - LABEL_SPAN}>Not set</Col>
+                <Col span={labelSpan}><Text strong>{field.label ?? field.name}</Text></Col>
+                <Col span={12 - labelSpan}>Not set</Col>
               </Row>
             )
           }
@@ -30,9 +30,9 @@ export const OverviewObject: React.FC<OverviewObjectProps> = ({data, fieldConfig
           if (Array.isArray(value)) {
             return (
               <Row key={field.name}>
-                <Col span={LABEL_SPAN}><Text strong>{field.label ?? field.name}</Text></Col>
-                <Col span={12 - LABEL_SPAN}>
-                  <Flex vertical gap={marginXS}>
+                <Col span={labelSpan}><Text strong>{field.label ?? field.name}</Text></Col>
+                <Col span={12 - labelSpan}>
+                  <Flex vertical={verticalList} gap={verticalList ? marginXS : 0}>
                   {(value ?? []).map(item => (
                     <Tag key={item} style={{width: 'fit-content'}}>{item}</Tag>))}
                   </Flex>
@@ -43,8 +43,8 @@ export const OverviewObject: React.FC<OverviewObjectProps> = ({data, fieldConfig
 
           return (
             <Row key={field.name}>
-              <Col span={LABEL_SPAN}><Text strong>{field.label ?? field.name}</Text></Col>
-              <Col span={12 - LABEL_SPAN}>{String(value)}</Col>
+              <Col span={labelSpan}><Text strong>{field.label ?? field.name}</Text></Col>
+              <Col span={12 - labelSpan}>{String(value)}</Col>
             </Row>
           )
         })
@@ -59,11 +59,13 @@ interface FieldConfig<T> {
   label?: string;
   getValue?: (data: T) => unknown;
   render?: (value: unknown, data: T) => React.ReactNode;
+  verticalList?: boolean,
 }
 
 
 export interface OverviewObjectProps<T = object> {
   data: T;
   fieldConfigs: FieldConfig<T>[];
+  labelSpan?: number;
 }
 

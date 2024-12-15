@@ -79,7 +79,7 @@ const OverviewTab: React.FC<{data: ImageInspect}> = ({data}) => {
       },
       {
         name: 'Working dir',
-        getValue: d => d.Config?.WorkingDir,
+        getValue: d => d.Config?.WorkingDir || '/',
       },
       {
         name: 'ContainerList',

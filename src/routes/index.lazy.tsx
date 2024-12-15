@@ -1,7 +1,10 @@
 import { createLazyFileRoute } from '@tanstack/react-router'
 import { Collapse, CollapseProps, Tabs } from 'antd'
 import { useEffect, useState } from 'react';
-import { systemApi } from '../atoms/system';
+import { SystemEvents } from '../components';
+import { useAtom } from 'jotai';
+import { systemAtom } from '../atoms/system';
+import { SwarmOverview, ImageOverview, ContainerOverview, CPUOverview, MemoryOverview, NetworkOverview, RuntimeOverview, StorageOverview } from './-components';
 
 
 export function Home() {
@@ -44,66 +47,58 @@ export function Home() {
 
 
 const SystemTab: React.FC = () => {
+  const [{data: systemInfo}] = useAtom(systemAtom);
+
   const items: CollapseProps['items'] = [
     {
       key: 'Containers',
       label: 'Containers',
-      children: <></>
+      children: <ContainerOverview systemInfo={systemInfo!} />
     },
     {
       key: 'Images',
       label: 'Images',
-      children: null,
+      children: <ImageOverview systemInfo={systemInfo!} />,
     },
     {
       key: 'Networking',
       label: 'Networking',
-      children: null,
+      children: <NetworkOverview systemInfo={systemInfo!} />,
     },
     {
       key: 'CPU',
       label: 'CPU',
-      children: null,
+      children: <CPUOverview systemInfo={systemInfo!} />,
     },
     {
       key: 'Memory',
       label: 'Memory',
-      children: null,
+      children: <MemoryOverview systemInfo={systemInfo!} />,
     },
     {
       key: 'Storage',
       label: 'Storage',
-      children: null,
+      children: <StorageOverview systemInfo={systemInfo!} />,
+    },
+    {
+      key: 'Runtime',
+      label: 'Runtime',
+      children: <RuntimeOverview systemInfo={systemInfo!} />,
     },
     {
       key: 'Swarm',
       label: 'Swarm',
-      children: null,
+      children: <SwarmOverview systemInfo={systemInfo!} />,
     },
-    {
-      key: 'Others',
-      label: 'Others',
-      children: null,
-    }
   ];
   return (
-    <Collapse items={items} />
+    systemInfo ? <Collapse items={items} defaultActiveKey={['Containers', 'Runtime']} /> : null
   )
 }
 
 
 const EventsTab: React.FC = () => {
-  useEffect(() => {
-    systemApi.systemEvents(undefined, {
-      onDownloadProgress(progressEvent) {
-        const text = progressEvent.event?.target.responseText;
-        console.log('---', text);
-      },
-    });
-  }, []);
-  return (
-    <div>Events</div>
-  )
+  return <SystemEvents />
 }
 
 

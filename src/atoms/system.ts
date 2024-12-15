@@ -19,12 +19,23 @@ export const eventsAtom = atom(async function*(): AsyncGenerator<Event> {
   if (res.body === null) return;
 
   const stream = res.body.pipeThrough(new TextDecoderStream());
+  const reader = stream.getReader();
 
-  for await (const value of stream) {
+  if (reader) {
     try {
-      yield JSON.parse(value);
-    } catch {
-      ;
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+
+        try {
+          yield JSON.parse(value);
+        } catch {
+          ;
+        }
+
+      }
+    } finally {
+      reader.releaseLock();
     }
   }
 });

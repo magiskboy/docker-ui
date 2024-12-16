@@ -92,7 +92,16 @@ const SystemTab: React.FC = () => {
     },
   ];
   return (
-    systemInfo ? <Collapse items={items} defaultActiveKey={['Containers', 'Runtime']} /> : null
+    systemInfo ? <Collapse items={items} defaultActiveKey={[
+      'Containers',
+      'Images',
+      'Networking',
+      'CPU',
+      'Memory',
+      'Storage',
+      'Runtime',
+      'Swarm',
+    ]} /> : null
   )
 }
 

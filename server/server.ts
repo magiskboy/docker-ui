@@ -1,17 +1,17 @@
 import fs from 'node:fs';
-import path from 'node:path';
 import express from 'express';
 import cors from 'cors';
 import { createProxyMiddleware } from 'http-proxy-middleware';
-import { WebSocketServer } from 'ws';
-import Docker from 'dockerode';
-import { Duplex } from 'node:stream';
+import {
+  STATIC_DIR,
+  OPENAPI_DIR,
+  HOST,
+  PORT,
+  DOCKER_SOCKET,
+} from './config';
+import { WebsockerHandler } from './websocket';
 
-const STATIC_DIR = path.join(path.dirname(__dirname), 'dist')
-const OPENAPI_DIR = path.join(path.dirname(__dirname), 'openapi')
-const HOST = process.env['HOST'] ?? 'localhost';
-const PORT = Number(process.env['PORT'] ?? '3000');
-const DOCKER_SOCKET = process.env['DOCKER_SOCKET'] ?? '/var/run/docker.sock';
+
 
 if (!fs.existsSync(DOCKER_SOCKET)) {
   console.error('Error: Docker socket not found');
@@ -43,80 +43,6 @@ app.use('/openapi', express.static(OPENAPI_DIR))
 app.use('/', express.static(STATIC_DIR));
 
 const server = app.listen(PORT, HOST);
-
-const wss = new WebSocketServer({ server });
-
-const docker = new Docker({
-  socketPath: DOCKER_SOCKET,
-});
-
-wss.on('connection', (ws) => {
-  const vars: {
-    container: Docker.Container | null;
-    exec: Docker.Exec | null;
-    stream: Duplex | null;
-  } = {
-    container: null,
-    exec: null,
-    stream: null
-  }
-
-  ws.on('message', async (message) => {
-    const data = JSON.parse(message.toString());
-
-    if (data.type === 'start') {
-      vars.container = docker.getContainer(data.containerName);
-      const exec = await vars.container.exec({
-        Cmd: data.command,
-        User: 'root',
-        WorkingDir: data.workingDir ?? '/',
-        Tty: true,
-        AttachStdout: true,
-        AttachStdin: true,
-        AttachStderr: true,
-        ConsoleSize: data.consoleSize,
-      });
-      vars.stream = await exec.start({
-        hijack: true,
-        Detach: false,
-        Tty: true,
-        stdin: true,
-      });
-      if (vars.stream === null) return;
-
-      vars.stream.on('data', data => {
-        ws.send(JSON.stringify({
-          type: 'result',
-          data: data.toString(),
-        }));
-      });
-
-      vars.stream.on('close', () => {
-        ws.close();
-      });
-
-      return;
-    }
-
-
-    if (data.type === 'command') {
-      if (!vars.stream) return;
-
-      vars.stream.write(data.command);
-
-      return;
-    }
-
-    if (data.type === 'resize') {
-      if (!vars.stream) return;
-
-      vars.exec?.resize({
-        h: data.consoleSize[0],
-        w: data.consoleSize[1],
-      })
-    }
-
-    ws.close();
-  });
-});
+const websocketHandler = new WebsockerHandler(server);
+websocketHandler.setup();
 

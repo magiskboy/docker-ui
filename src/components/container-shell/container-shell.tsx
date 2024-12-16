@@ -1,11 +1,13 @@
 import React, { useEffect, useRef, useState } from 'react';
+import { useAtom } from 'jotai';
 import { Terminal } from '@xterm/xterm';
 import { FitAddon } from '@xterm/addon-fit';
 import { WebglAddon } from '@xterm/addon-webgl';
 import styles from './container-shell.module.css';
-import { TerminalController } from './terminal-controller';
-import { useAtom } from 'jotai';
+import { TerminalController } from '../../libs';
 import { focusedContainerAtom } from '../../atoms/containers';
+import { handleAxiosError } from '../../utils/errors';
+import { notification } from 'antd';
 
 
 export const ContainerShell: React.FC<Props> = ({name}) => {
@@ -33,14 +35,18 @@ export const ContainerShell: React.FC<Props> = ({name}) => {
       instance.open(terminalRef.current);
       instance.writeln(`Connecting to container ${name}...`);
       instance.focus();
+      fitAddon.fit();
 
       window.onresize = (() => {
         fitAddon.fit();
       });
 
-      fitAddon.fit();
-
-      const terminalController = new TerminalController(instance, name!, focusedContainer);
+      const terminalController = new TerminalController(instance, name!, focusedContainer, (e) => {
+        notification.error({
+          message: 'Error',
+          description: e.message,
+        });
+      });
       terminalController.initialize();
     }
 

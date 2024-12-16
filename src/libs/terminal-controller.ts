@@ -1,6 +1,6 @@
 import type { Terminal } from '@xterm/xterm';
-import { API_URL } from '../../constants';
-import { ContainerInspectResponse } from '../../api/docker-engine';
+import { API_URL } from '../constants';
+import { ContainerInspectResponse } from '../api/docker-engine';
 
 
 export class TerminalController {
@@ -10,6 +10,7 @@ export class TerminalController {
     private readonly terminal: Terminal,
     private readonly containerName: string,
     private readonly container?: ContainerInspectResponse,
+    private onError?: (error: Error) => void,
   ) {
     this.ws = this.createWebsocket();
     this.terminal.onData((e) => this.ws.send(JSON.stringify({
@@ -44,6 +45,10 @@ export class TerminalController {
 
     this.ws.onmessage = (event) => {
       const data = JSON.parse(event.data);
+      if (data.type === 'error') {
+        this.onError?.(new Error(data.message));
+        return;
+      }
       this.terminal.write(data.data);
     };
 

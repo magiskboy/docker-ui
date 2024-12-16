@@ -1390,11 +1390,6 @@
   dependencies:
     "@swc/core" "^1.7.26"
 
-"@xterm/addon-attach@^0.11.0":
-  version "0.11.0"
-  resolved "https://registry.yarnpkg.com/@xterm/addon-attach/-/addon-attach-0.11.0.tgz#081474e38cf643725380db8530d842cd045c9eb1"
-  integrity sha512-JboCN0QAY6ZLY/SSB/Zl2cQ5zW1Eh4X3fH7BnuR1NB7xGRhzbqU2Npmpiw/3zFlxDaU88vtKzok44JKi2L2V2Q==
-
 "@xterm/addon-fit@^0.10.0":
   version "0.10.0"
   resolved "https://registry.yarnpkg.com/@xterm/addon-fit/-/addon-fit-0.10.0.tgz#bebf87fadd74e3af30fdcdeef47030e2592c6f55"

@@ -74,6 +74,7 @@ wss.on('connection', (ws) => {
         AttachStdout: true,
         AttachStdin: true,
         AttachStderr: true,
+        ConsoleSize: data.consoleSize,
       });
       vars.stream = await exec.start({
         hijack: true,
@@ -81,6 +82,7 @@ wss.on('connection', (ws) => {
         Tty: true,
         stdin: true,
       });
+      if (vars.stream === null) return;
 
       vars.stream.on('data', data => {
         ws.send(JSON.stringify({
@@ -103,6 +105,15 @@ wss.on('connection', (ws) => {
       vars.stream.write(data.command);
 
       return;
+    }
+
+    if (data.type === 'resize') {
+      if (!vars.stream) return;
+
+      vars.exec?.resize({
+        h: data.consoleSize[0],
+        w: data.consoleSize[1],
+      })
     }
 
     ws.close();

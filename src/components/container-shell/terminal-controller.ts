@@ -16,6 +16,13 @@ export class TerminalController {
       type: 'command',
       command: e,
     })));
+
+    this.terminal.onResize(({cols, rows}) => {
+      this.ws.send(JSON.stringify({
+        type: 'resize',
+        consoleSize: [rows, cols],
+      }));
+    });
   }
 
   private createWebsocket() {
@@ -31,6 +38,7 @@ export class TerminalController {
         command: ['/bin/sh'],
         containerName: this.containerName,
         workingDir: this.container?.Config?.WorkingDir,
+        consoleSize: [this.terminal.rows, this.terminal.cols],
       }));
     };
 

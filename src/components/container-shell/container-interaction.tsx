@@ -33,6 +33,11 @@ export const ContainerShell: React.FC<Props> = ({name}) => {
       instance.open(terminalRef.current);
       instance.writeln(`Connecting to container ${name}...`);
       instance.focus();
+
+      window.onresize = (() => {
+        fitAddon.fit();
+      });
+
       fitAddon.fit();
 
       const terminalController = new TerminalController(instance, name!, focusedContainer);
@@ -46,9 +51,7 @@ export const ContainerShell: React.FC<Props> = ({name}) => {
  
 
   return (
-    <div className={styles['container-shell']}>
-      <div className={styles['terminal']} ref={terminalRef}></div>
-    </div>
+    <div className={styles['terminal']} ref={terminalRef}></div>
   )
 }
 

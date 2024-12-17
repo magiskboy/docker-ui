@@ -27,27 +27,27 @@ function Page() {
   }
 
   return (
-      <Tabs 
+      imageInspector ? <Tabs 
         activeKey={activeTab}
         onChange={handleChangeTab}
         items={[
           {
             key: 'overview',
             label: 'Overview',
-            children: imageInspector ? <OverviewTab data={imageInspector} /> : null,
+            children: <OverviewTab data={imageInspector} />,
           },
           {
             key: 'layers',
             label: 'Layers',
-            children: imageInspector ? <LayersTab imageName={imageName} /> : null,
+            children: <LayersTab imageName={imageName} />,
           },
           {
             key: 'json',
-            label: 'JSON',
-            children: imageInspector ? <JSONTab content={imageInspector} /> : null,
+            label: 'Inspect',
+            children:  <JSONTab content={imageInspector} />,
           }
         ]}
-      />
+      /> : null
   )
 }
 

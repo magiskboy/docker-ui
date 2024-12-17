@@ -1,8 +1,9 @@
 import type { Server } from 'node:http';
-import { WebSocketServer, WebSocket } from 'ws';
+import { WebSocketServer, WebSocket, RawData } from 'ws';
 import Docker from 'dockerode';
 import type { Duplex } from 'node:stream';
 import { DOCKER_SOCKET } from './config';
+import { ErrorTerminalMessage, Message, ResizeTerminalMessage, StartTerminalMessage, StdinStreamTerminalMessage, StdoutStreamTerminalMessage } from './message';
 
 
 export class WebsockerHandler {
@@ -30,7 +31,7 @@ export class WebsockerHandler {
       });
 
       ws.on('message', message => {
-        this.onMessage(message.toString(), vars);
+        this.onMessage(message, vars);
       });
 
       ws.on('close', () => {
@@ -43,13 +44,14 @@ export class WebsockerHandler {
     });
   }
 
-  onMessage(message: string, context: ContextVars) {
-    const data = JSON.parse(message.toString());
+  onMessage(rawMessage: RawData, context: ContextVars) {
+    const message = Message.fromString(rawMessage.toString())
 
-    if (data.type === 'start') {
+    if (message.Type === StartTerminalMessage.name) {
+      const data = message.Data as StartTerminalMessage['Data'];
       context.container = this.docker.getContainer(data.containerName);
       context.container.exec({
-        Cmd: data.command,
+        Cmd: data.cmd,
         User: 'root',
         WorkingDir: data.workingDir ?? '/',
         Tty: true,
@@ -69,10 +71,10 @@ export class WebsockerHandler {
           context.stream = stream;
 
           stream.on('data', data => {
-            context.ws.send(JSON.stringify({
-              type: 'result',
-              data: data.toString(),
-            }));
+            const message = new StdoutStreamTerminalMessage({
+              data: data.toString()
+            })
+            context.ws.send(message.toString());
           });
 
           stream.on('close', () => {
@@ -80,26 +82,26 @@ export class WebsockerHandler {
           });
         })
       }).catch(e => {
-        context.ws.send(JSON.stringify({
-          type: 'error',
-          message: e.message,
-        }));
+        const message = new ErrorTerminalMessage({
+          message: e.message
+        })
+        context.ws.send(message.toString());
       });
 
       return;
     }
 
-    if (data.type === 'command') {
+    if (message.Type === StdinStreamTerminalMessage.name) {
       if (!context.stream) return;
-
-      context.stream.write(data.command);
-
+      const data = message.Data as StdinStreamTerminalMessage['Data'];
+      context.stream.write(data.data);
       return;
     }
 
-    if (data.type === 'resize') {
+    if (message.Type === ResizeTerminalMessage.name) {
       if (!context.stream) return;
 
+      const data = message.Data as ResizeTerminalMessage['Data'];
       context.exec?.resize({
         h: data.consoleSize[0],
         w: data.consoleSize[1],
@@ -108,7 +110,7 @@ export class WebsockerHandler {
       return;
     }
 
-    context.ws.close();
+    // context.ws.close();
   }
 
   onOpen(context: ContextVars) {

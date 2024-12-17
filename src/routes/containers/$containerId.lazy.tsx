@@ -29,30 +29,29 @@ function Page() {
   }
 
   return (
-    <>
-      <Tabs activeKey={activeTab} onChange={handleChangeTab} style={{height: '100%'}} items={[
+      containerInspector ? <Tabs activeKey={activeTab} onChange={handleChangeTab} style={{height: '100%'}} items={[
         {
           key: 'overview',
           label: 'Overview',
-          children: containerInspector ? <OverviewTab data={containerInspector} /> : null,
-        },
-        {
-          key: 'json',
-          label: 'JSON',
-          children: containerInspector ? <JSONTab data={containerInspector} /> : null,
+          children: <OverviewTab data={containerInspector} />,
         },
         {
           key: 'log',
           label: 'Log',
-          children: containerInspector ? <LogTab data={containerInspector} /> : null,
+          children: <LogTab data={containerInspector} />,
         },
         {
           key: 'shell',
           label: 'Shell',
-          children: containerInspector ? <ShellTab data={containerInspector} /> : null,
-        }
-      ]} />
-    </>
+          children:  <ShellTab data={containerInspector} />,
+          disabled: !containerInspector?.State?.Running,
+        },
+        {
+          key: 'json',
+          label: 'Inspect',
+          children: <JSONTab data={containerInspector} />,
+        },
+      ]} /> : null
   )
 }
 

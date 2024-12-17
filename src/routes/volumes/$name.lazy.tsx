@@ -6,9 +6,6 @@ import { focusedVolumeAtom, focusedVolumeNameAtom } from '../../atoms/volumes';
 import { Volume } from '../../api/docker-engine';
 import { OverviewObject, JsonViewer, type OverviewObjectProps} from '../../components';
 
-export const Route = createLazyFileRoute('/volumes/$name')({
-  component: RouteComponent,
-})
 
 function RouteComponent() {
   const {params: {name}} = Route.useMatch();
@@ -27,24 +24,22 @@ function RouteComponent() {
   }
 
   return (
-    <>
-      <Tabs 
+      focusedVolume ? <Tabs 
         activeKey={activeTab}
         onChange={handleChangeTab}
         items={[
           {
             key: 'overview',
             label: 'Overview',
-            children: focusedVolume ? <OverviewTab data={focusedVolume} /> : null,
+            children: <OverviewTab data={focusedVolume} />,
           },
           {
             key: 'json',
-            label: 'JSON',
-            children: focusedVolume ? <JSONTab content={focusedVolume} /> : null,
+            label: 'Inspect',
+            children: <JSONTab content={focusedVolume} />,
           }
         ]}
-      />
-    </>
+      /> : null
   )
 }
 
@@ -88,3 +83,8 @@ const OverviewTab: React.FC<{data: Volume}> = ({data}) => {
 const JSONTab: React.FC<{content: Volume}> = ({content}) => {
   return <JsonViewer fetcher={() => Promise.resolve(content)} />
 }
+
+
+export const Route = createLazyFileRoute('/volumes/$name')({
+  component: RouteComponent,
+});

@@ -1,21 +1,20 @@
 import { createLazyFileRoute, Link, useNavigate } from '@tanstack/react-router'
-import { useAtom, useAtomValue } from 'jotai';
+import { useAtomValue } from 'jotai';
 
-import { containersAtom, restartContainerAtom, startContainerAtom, stopContainerAtom, deleteContainerAtom, focusedContainerIdOrNameAtom, focusedContainerAtom } from '../../atoms/containers';
-import { Divider, Table, Flex, Button, theme, Popconfirm } from 'antd';
+import { containersAtom, startContainerAtom, stopContainerAtom, deleteContainerAtom } from '../../atoms/containers';
+import { Divider, Table, Flex, Button, theme, Popconfirm, Tag } from 'antd';
 import type { TableColumnType } from 'antd';
 import ButtonGroup from 'antd/es/button/button-group';
 import { useEffect, useState } from 'react';
 import { TableRowSelection } from 'antd/es/table/interface';
 import { FaRegCircleStop } from 'react-icons/fa6';
-import { MdOutlineRestartAlt } from 'react-icons/md';
 import { AiOutlineDelete } from 'react-icons/ai';
 import { handleAxiosError } from '../../utils/errors';
 import { compareStrings } from '../../utils';
-import { BsFiletypeJson } from "react-icons/bs";
-import { InspectorModal } from '../../components';
 import { IoPlayOutline } from "react-icons/io5";
 import { IoLogoBuffer } from "react-icons/io";
+import { IoTerminalOutline } from "react-icons/io5";
+
 
 
 export const Route = createLazyFileRoute('/containers/')({
@@ -26,13 +25,9 @@ function Page() {
   const { data: containers, error: fetchContainerError, isError: isFetchContainerError } = useAtomValue(containersAtom);
   const [selectedKeys, setSelectedKeys] = useState<React.Key[]>([]);
   const { mutate: stopContainer } = useAtomValue(stopContainerAtom);
-  const { mutate: restartContainer } = useAtomValue(restartContainerAtom);
   const { mutate: startContainer } = useAtomValue(startContainerAtom);
   const { mutate: deleteContainer } = useAtomValue(deleteContainerAtom);
   const { token: {paddingXS} } = theme.useToken();
-  const [containerInspectorId, setContainerInspectorId] = useAtom(focusedContainerIdOrNameAtom);
-  const [{ data: containerInspector }] = useAtom(focusedContainerAtom);
-  const [showInspectorModal, setShowInspectorModal] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -63,6 +58,9 @@ function Page() {
       key: 'ports',
       dataIndex: 'ports',
       title: 'Ports',
+      render: (_, record) => {
+        return record.ports?.sort().map(port => <Tag key={port}>{port}</Tag>)
+      }
     },
     {
       key: 'status',
@@ -75,10 +73,17 @@ function Page() {
       title: 'Actions',
       render: (_, record) => record.id ? (
         <Flex gap={paddingXS}>
-          <Button onClick={() => {
-            setContainerInspectorId(record.name);
-            setShowInspectorModal(true);
-          }} icon={<BsFiletypeJson />} />
+          <Button 
+            onClick={() => {
+              navigate({
+                to: '/containers/$containerId',
+                params: { containerId: record.name },
+                hash: 'shell',
+              });
+            }} 
+            icon={<IoTerminalOutline />} 
+            disabled={record.state !== 'running'}
+          />
 
           {record.state === 'running' ? 
             <Popconfirm
@@ -90,12 +95,6 @@ function Page() {
             : <Button icon={<IoPlayOutline />} onClick={() => startContainer(record.id!)} />
           }
 
-          <Popconfirm
-            title="Are you sure you want to restart this container?"
-            onConfirm={() => restartContainer(record.id!)}
-          >
-            <Button icon={<MdOutlineRestartAlt />} />
-          </Popconfirm>
           <Popconfirm
             title="Are you sure you want to delete this container?"
             onConfirm={() => deleteContainer(record.id!)}
@@ -131,12 +130,6 @@ function Page() {
       </Flex>
       <Divider />
       <Table columns={columns} dataSource={mappedData} rowSelection={rowSelection} />
-      <InspectorModal 
-        title={containerInspectorId}
-        content={containerInspector!} 
-        onClose={() => setShowInspectorModal(false)} 
-        open={showInspectorModal}
-      />
     </>
   )
 }

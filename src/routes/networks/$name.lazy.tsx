@@ -29,24 +29,22 @@ function RouteComponent() {
   }
 
   return (
-    <>
-      <Tabs 
+      focusedNetwork ? <Tabs 
         activeKey={activeTab}
         onChange={handleChangeTab}
         items={[
           {
             key: 'overview',
             label: 'Overview',
-            children: focusedNetwork ? <OverviewTab data={focusedNetwork} /> : null,
+            children: <OverviewTab data={focusedNetwork} />,
           },
           {
             key: 'json',
-            label: 'JSON',
-            children: focusedNetwork ? <JSONTab content={focusedNetwork} /> : null,
+            label: 'Inspect',
+            children: <JSONTab content={focusedNetwork} />,
           }
         ]}
-      />
-    </>
+      /> : null
   )
 }
 

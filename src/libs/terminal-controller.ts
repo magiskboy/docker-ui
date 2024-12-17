@@ -1,6 +1,7 @@
 import type { Terminal } from '@xterm/xterm';
 import { API_URL } from '../constants';
 import { ContainerInspectResponse } from '../api/docker-engine';
+import { StartTerminalMessage, ResizeTerminalMessage, StdinStreamTerminalMessage, StdoutStreamTerminalMessage, Message, ErrorTerminalMessage } from '../../server/message';
 
 
 export class TerminalController {
@@ -13,16 +14,14 @@ export class TerminalController {
     private onError?: (error: Error) => void,
   ) {
     this.ws = this.createWebsocket();
-    this.terminal.onData((e) => this.ws.send(JSON.stringify({
-      type: 'command',
-      command: e,
-    })));
+    this.terminal.onData(data => {
+      const message = new StdinStreamTerminalMessage({ data });
+      this.ws.send(message.toString());
+    });
 
     this.terminal.onResize(({cols, rows}) => {
-      this.ws.send(JSON.stringify({
-        type: 'resize',
-        consoleSize: [rows, cols],
-      }));
+      const message = new ResizeTerminalMessage({ consoleSize: [rows, cols] });
+      this.ws.send(message.toString());
     });
   }
 
@@ -34,21 +33,24 @@ export class TerminalController {
 
   initialize() {
     this.ws.onopen = () => {
-      this.ws.send(JSON.stringify({
-        type: 'start',
-        command: ['/bin/sh'],
+      const message = new StartTerminalMessage({
+        cmd: ['/bin/sh'],
         containerName: this.containerName,
         workingDir: this.container?.Config?.WorkingDir,
         consoleSize: [this.terminal.rows, this.terminal.cols],
-      }));
+      })
+      this.ws.send(message.toString());
     };
 
     this.ws.onmessage = (event) => {
-      const data = JSON.parse(event.data);
-      if (data.type === 'error') {
+      const message = Message.fromString(event.data.toString());
+      if (message.Type === ErrorTerminalMessage.name) {
+        const data = message.Data as ErrorTerminalMessage['Data'];
         this.onError?.(new Error(data.message));
         return;
       }
+
+      const data = message.Data as StdoutStreamTerminalMessage['Data'];
       this.terminal.write(data.data);
     };
 

@@ -1,11 +1,8 @@
 import React from 'react';
 import { SystemInfo } from '../../../api/docker-engine';
 import { JsonViewer, OverviewObject, OverviewObjectProps } from '../../../components';
-import { Row, Col,Tag, Typography, Modal } from 'antd';
+import { Tag, Modal } from 'antd';
 import styles from './runtime-overview.module.css';
-
-
-const { Text } = Typography;
 
 
 export const RuntimeOverview: React.FC<Props> = ({systemInfo}) => {
@@ -13,7 +10,7 @@ export const RuntimeOverview: React.FC<Props> = ({systemInfo}) => {
   const fieldConfigs: OverviewObjectProps<SystemInfo>['fieldConfigs'] = [
     {
       name: 'OperatingSystem',
-      label: 'Operating system',
+      label: 'OS',
     },
     {
       name: 'OSType',
@@ -60,41 +57,38 @@ export const RuntimeOverview: React.FC<Props> = ({systemInfo}) => {
         const defaultRuntime = data.DefaultRuntime;
 
         return (
-          <Row key="Runtimes">
-            <Col span={5}><Text strong>Runtimes</Text></Col>
-            <Col span={5}>
-              {
-                Object.entries(runtimes || {}).map(([name, value]) => {
-                  const spec = {
-                    specification: JSON.parse(value.status?.['org.opencontainers.runtime-spec.features'] || ''),
-                    path: value.path,
-                    args: value.runtimeArgs,
-                  };
+          <>
+            {
+              Object.entries(runtimes || {}).map(([name, value]) => {
+                const spec = {
+                  specification: JSON.parse(value.status?.['org.opencontainers.runtime-spec.features'] || ''),
+                  path: value.path,
+                  args: value.runtimeArgs,
+                };
 
-                  return (
-                    <Tag 
-                      className={styles.runtime__runtimes__item}
-                      key={name}  
-                      color={name === defaultRuntime ? 'green' : 'default'}
-                      onClick={() => {
-                        modal.info({
-                          title: name,
-                          content: (
-                              <JsonViewer 
-                                fetcher={() => Promise.resolve(spec)} 
-                                style={{height: 'calc(100vh - 200px)', overflow: 'scroll'}} 
-                              />
-                          ),
-                          width: '60%',
-                          centered: true,
-                        });
-                      }}
-                    >{name}</Tag>
-                  )
-                })
-              }
-            </Col>
-          </Row>
+                return (
+                  <Tag 
+                    className={styles.runtime__runtimes__item}
+                    key={name}  
+                    color={name === defaultRuntime ? 'green' : 'default'}
+                    onClick={() => {
+                      modal.info({
+                        title: name,
+                        content: (
+                            <JsonViewer 
+                              fetcher={() => Promise.resolve(spec)} 
+                              style={{height: 'calc(100vh - 200px)', overflow: 'scroll'}} 
+                            />
+                        ),
+                        width: '60%',
+                        centered: true,
+                      });
+                    }}
+                  >{name}</Tag>
+                )
+              })
+            }
+          </>
         );
       }
     }
@@ -102,7 +96,7 @@ export const RuntimeOverview: React.FC<Props> = ({systemInfo}) => {
 
   return (
     <>
-      <OverviewObject fieldConfigs={fieldConfigs} data={systemInfo} labelSpan={5} />
+      <OverviewObject fieldConfigs={fieldConfigs} data={systemInfo} labelSpan={12} collapsed />
       {contextHolder}
     </>
   );

@@ -2,11 +2,10 @@ import { createLazyFileRoute, Link } from '@tanstack/react-router'
 import { useAtom } from 'jotai';
 import { focusedNetworkAtom, focusedNetworkIdOrNameAtom } from '../../atoms/networks';
 import React, { useEffect } from 'react';
-import { OverviewObjectProps, OverviewObject, JsonViewer } from '../../components';
-import type { Network, ImageInspect } from '../../api/docker-engine';
-import { Tabs, Row, Col, Typography, Tooltip, Flex, theme, Tag } from 'antd';
+import { OverviewObjectProps, OverviewObject } from '../../components';
+import type { Network } from '../../api/docker-engine';
+import { Tabs, Flex, theme, Tag } from 'antd';
 
-const { Text } = Typography;
 
 export const Route = createLazyFileRoute('/networks/$name')({
   component: RouteComponent,
@@ -38,11 +37,6 @@ function RouteComponent() {
             label: 'Overview',
             children: <OverviewTab data={focusedNetwork} />,
           },
-          {
-            key: 'json',
-            label: 'Inspect',
-            children: <JSONTab content={focusedNetwork} />,
-          }
         ]}
       /> : null
   )
@@ -78,23 +72,18 @@ const OverviewTab: React.FC<{data: Network}> = ({data}) => {
           }
           
           return (
-            <Row key={'Containers'}>
-              <Col span={3}><Text strong>Containers</Text></Col>
-              <Col span={12 - 3}>
-                <Flex vertical gap={marginXS}>
-                  {
-                    Object.entries(containers).map(([id, container]) => (
-                      <Flex key={id} gap={marginSM}>
-                        <Link key={id} to='/containers/$name' params={{name: container.Name}}>
-                          {container.Name}
-                        </Link>
-                        <Tag style={{width: 'fit-content'}}>{container.IPv4Address}</Tag>
-                      </Flex>
-                    ))
-                  }
-                </Flex>
-              </Col>
-            </Row>
+            <>
+              {
+                Object.entries(containers).map(([id, container]) => (
+                  <Flex key={id} gap={marginSM}>
+                    <Link key={id} to='/containers/$name' params={{name: container.Name}}>
+                      {container.Name}
+                    </Link>
+                    <Tag style={{width: 'fit-content'}}>{container.IPv4Address}</Tag>
+                  </Flex>
+                ))
+              }
+            </>
           )
         }
       },
@@ -116,10 +105,5 @@ const OverviewTab: React.FC<{data: Network}> = ({data}) => {
     data={data}
     fieldConfigs={fieldConfigs}  
   />
-}
-
-
-const JSONTab: React.FC<{content: ImageInspect}> = ({content}) => {
-  return <JsonViewer fetcher={() => Promise.resolve(content)} />;
 }
 

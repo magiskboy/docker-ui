@@ -29,7 +29,7 @@ export const MemoryOverview: React.FC<Props> = ({systemInfo}) => {
     },
   ];
 
-  return <OverviewObject data={systemInfo} fieldConfigs={fieldConfigs} labelSpan={4} />
+  return <OverviewObject data={systemInfo} fieldConfigs={fieldConfigs} labelSpan={12} collapsed />
 }
 
 

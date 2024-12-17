@@ -30,7 +30,7 @@ export const CPUOverview: React.FC<Props> = ({systemInfo}) => {
     }
   ];
 
-  return <OverviewObject data={systemInfo} fieldConfigs={fieldConfigs} labelSpan={6} />
+  return <OverviewObject data={systemInfo} fieldConfigs={fieldConfigs} labelSpan={12} collapsed />
 }
 
 

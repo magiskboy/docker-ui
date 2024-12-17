@@ -99,7 +99,7 @@ function Page() {
       title: 'Name',
       sorter: (a, b) => compareStrings(a.name, b.name),
       render: (_, record) => 
-        <Link to={'/images/$imageName'} params={{imageName: record.repoTag}}>{record.name}</Link>
+        <Link to={'/images/$name'} params={{name: record.repoTag}}>{record.name}</Link>
     },
     {
       key: 'tag',

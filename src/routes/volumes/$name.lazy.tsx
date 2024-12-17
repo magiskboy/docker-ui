@@ -4,7 +4,7 @@ import { createLazyFileRoute } from '@tanstack/react-router'
 import { useAtom } from 'jotai';
 import { focusedVolumeAtom, focusedVolumeNameAtom } from '../../atoms/volumes';
 import { Volume } from '../../api/docker-engine';
-import { OverviewObject, JsonViewer, type OverviewObjectProps} from '../../components';
+import { OverviewObject, type OverviewObjectProps} from '../../components';
 
 
 function RouteComponent() {
@@ -33,11 +33,6 @@ function RouteComponent() {
             label: 'Overview',
             children: <OverviewTab data={focusedVolume} />,
           },
-          {
-            key: 'json',
-            label: 'Inspect',
-            children: <JSONTab content={focusedVolume} />,
-          }
         ]}
       /> : null
   )
@@ -77,11 +72,6 @@ const OverviewTab: React.FC<{data: Volume}> = ({data}) => {
     data={data}
     fieldConfigs={fieldConfigs}  
   />
-}
-
-
-const JSONTab: React.FC<{content: Volume}> = ({content}) => {
-  return <JsonViewer fetcher={() => Promise.resolve(content)} />
 }
 
 

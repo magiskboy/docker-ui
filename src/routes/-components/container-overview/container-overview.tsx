@@ -7,6 +7,9 @@ export const ContainerOverview: React.FC<Props> = ({systemInfo}) => {
   return (
     <Flex gap={16}>
       <Card bordered={false} className={styles['container-overview-item']}>
+        <Statistic title="Images" value={systemInfo.Images} valueStyle={{color: 'black'}} />
+      </Card>
+      <Card bordered={false} className={styles['container-overview-item']}>
         <Statistic title="Containers" value={systemInfo.Containers} valueStyle={{color: 'black'}} />
       </Card>
       <Card bordered={false} className={styles['container-overview-item']}>

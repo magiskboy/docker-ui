@@ -1,7 +1,7 @@
 import React from 'react';
 import { SystemInfo } from '../../../api/docker-engine';
 import { JsonViewer, OverviewObject, OverviewObjectProps } from '../../../components';
-import { Col, List, Row, Typography, Tag, Modal } from 'antd';
+import { List, Typography, Tag, Modal } from 'antd';
 
 
 const { Text } = Typography;
@@ -43,33 +43,28 @@ export const SwarmOverview: React.FC<Props> = ({systemInfo}) => {
       name: 'Cluster',
       render: (value, d) => {
         return (
-          value ? <Row>
-            <Col span={6}><Text strong>Cluster</Text></Col>
-            <Col span={18}>
-              <List>
-                <List.Item>
-                  <Text strong>ID:</Text>
-                  <Text 
-                    onClick={() => modal.info({
-                      title: 'Cluster info',
-                      content: (
-                        <JsonViewer
-                          fetcher={() => Promise.resolve(d.Swarm?.Cluster ?? {})}
-                          style={{height: 'calc(100vh - 200px)', overflow: 'scroll'}}
-                        />
-                      )
-                    })}
-                  >
-                    {d.Swarm?.Cluster?.ID}
-                  </Text>
-                </List.Item>
-                <List.Item>
-                  <Text strong>Addrress pool:</Text>
-                  {d.Swarm?.Cluster?.DefaultAddrPool?.map(item => <Tag key={item}>{item}</Tag>)}
-                </List.Item>
-              </List>
-            </Col>
-          </Row> : null
+          value ? <List>
+            <List.Item>
+              <Text strong>ID:</Text>
+              <Text 
+                onClick={() => modal.info({
+                  title: 'Cluster info',
+                  content: (
+                    <JsonViewer
+                      fetcher={() => Promise.resolve(d.Swarm?.Cluster ?? {})}
+                      style={{height: 'calc(100vh - 200px)', overflow: 'scroll'}}
+                    />
+                  )
+                })}
+              >
+                {d.Swarm?.Cluster?.ID}
+              </Text>
+            </List.Item>
+            <List.Item>
+              <Text strong>Addrress pool:</Text>
+              {d.Swarm?.Cluster?.DefaultAddrPool?.map(item => <Tag key={item}>{item}</Tag>)}
+            </List.Item>
+          </List> : null
         )
       }
     },
@@ -77,7 +72,7 @@ export const SwarmOverview: React.FC<Props> = ({systemInfo}) => {
 
   return (
     <>
-      <OverviewObject fieldConfigs={fieldConfigs} data={systemInfo} labelSpan={6} />
+      <OverviewObject fieldConfigs={fieldConfigs} data={systemInfo} labelSpan={12} collapsed />
       {contextHolder}
     </>
   ) 

@@ -84,8 +84,8 @@ function Page() {
   const data = (images ?? []).map((image) => ({
     id: image.Id,
     size: image.Size,
-    name: image.RepoTags ? image.RepoTags[0].split(':')[0] : '',
-    tag: image.RepoTags ? image.RepoTags[0].split(':')[1] : '',
+    name: image.RepoTags ? image.RepoTags[0]?.split(':')[0] : '',
+    tag: image.RepoTags ? image.RepoTags[0]?.split(':')[1] : '',
     repoTag: image.RepoTags[0],
     status: image.Containers > 0 ? 'In Use' : 'Unused',
     created: image.Created,
@@ -99,7 +99,7 @@ function Page() {
       title: 'Name',
       sorter: (a, b) => compareStrings(a.name, b.name),
       render: (_, record) => 
-        <Link to={'/images/$imageName'} params={{imageName: record.repoTag}}>{record.name}</Link>
+        record.name ? <Link to={'/images/$name'} params={{name: record.repoTag}}>{record.name}</Link> : '<none>'
     },
     {
       key: 'tag',
@@ -111,6 +111,7 @@ function Page() {
       })),
       onFilter: (value, record) => record.tag === value,
       filterMultiple: true,
+      render: (_, record) => record.tag ?? '<none>',
     },
     {
       key: 'status',

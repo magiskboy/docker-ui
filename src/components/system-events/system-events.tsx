@@ -44,7 +44,7 @@ export const SystemEvents: React.FC<Props> = () => {
       render: (value, record) => {
         if (record.Type === 'image') {
           const name = value.Attributes?.name;
-          return <Link to='/images/$imageName' params={{imageName: name!}}>{name}</Link>
+          return <Link to='/images/$name' params={{name}}>{name}</Link>
         }
 
         if (record.Type === 'container') {

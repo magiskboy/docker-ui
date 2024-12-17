@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 import { SystemEvents } from '../components';
 import { useAtom } from 'jotai';
 import { systemAtom } from '../atoms/system';
-import { SwarmOverview, ImageOverview, ContainerOverview, CPUOverview, MemoryOverview, NetworkOverview, RuntimeOverview, StorageOverview } from './-components';
+import { SwarmOverview, ContainerOverview, CPUOverview, MemoryOverview, NetworkOverview, RuntimeOverview, StorageOverview } from './-components';
 
 
 export function Home() {
@@ -54,11 +54,6 @@ const SystemTab: React.FC = () => {
       key: 'Containers',
       label: 'Containers',
       children: <ContainerOverview systemInfo={systemInfo!} />
-    },
-    {
-      key: 'Images',
-      label: 'Images',
-      children: <ImageOverview systemInfo={systemInfo!} />,
     },
     {
       key: 'Networking',

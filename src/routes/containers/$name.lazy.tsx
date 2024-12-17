@@ -1,15 +1,12 @@
 import { createLazyFileRoute, Link } from '@tanstack/react-router'
-import { Col, Row, Tabs, Typography } from 'antd';
+import { Tabs } from 'antd';
 import React, { useEffect } from 'react';
 import { ContainerInspectResponse } from '../../api/docker-engine';
 import { useAtom } from 'jotai';
 import { focusedContainerAtom, focusedContainerIdOrNameAtom } from '../../atoms/containers';
 import { formatBytes } from '../../utils';
 import { headingAtom } from '../../atoms/common';
-import { ContainerShell, ContainerLog, OverviewObjectProps, OverviewObject, JsonViewer } from '../../components';
-
-
-const { Text } = Typography;
+import { ContainerShell, ContainerLog, OverviewObjectProps, OverviewObject } from '../../components';
 
 
 function Page() {
@@ -46,11 +43,6 @@ function Page() {
           children:  <ShellTab data={containerInspector} />,
           disabled: !containerInspector?.State?.Running,
         },
-        {
-          key: 'json',
-          label: 'Inspect',
-          children: <JSONTab data={containerInspector} />,
-        },
       ]} /> : null
   )
 }
@@ -64,27 +56,11 @@ const OverviewTab: React.FC<{data: ContainerInspectResponse}> = ({data}) => {
     {
       name: 'Image',
       getValue: data => data.Config?.Image,
-      render: (value, data) => (
-        <Row key="Image">
-          <Col span={3}><Text strong>Image</Text></Col>
-          <Col span={24-3}>
-            <Link 
-              to='/images/$imageName' 
-              params={{ imageName: data.Config?.Image as string}}
-            >
-              {value as string}
-            </Link>
-          </Col>
-        </Row>
-      )
+      render: (value, data) => <Link to='/images/$name' params={{name: data.Config?.Image as string}}>{value as string}</Link>
     },
     {
       name: 'Command',
       getValue: data => data.Config?.Cmd,
-      verticalList: false,
-    },
-    {
-      name: 'Args',
       verticalList: false,
     },
     {
@@ -128,11 +104,6 @@ const OverviewTab: React.FC<{data: ContainerInspectResponse}> = ({data}) => {
   ];
 
   return <OverviewObject data={data} fieldConfigs={fieldConfig} />
-}
-
-
-const JSONTab: React.FC<{data: ContainerInspectResponse}> = ({data}) => {
-  return <JsonViewer fetcher={() => Promise.resolve(data)} />
 }
 
 

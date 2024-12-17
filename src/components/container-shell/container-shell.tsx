@@ -6,7 +6,6 @@ import { WebglAddon } from '@xterm/addon-webgl';
 import styles from './container-shell.module.css';
 import { TerminalController } from '../../libs';
 import { focusedContainerAtom } from '../../atoms/containers';
-import { handleAxiosError } from '../../utils/errors';
 import { notification } from 'antd';
 
 

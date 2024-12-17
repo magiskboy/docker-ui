@@ -13,14 +13,14 @@ const { Text } = Typography;
 
 
 function Page() {
-  const {params: {containerId}} = Route.useMatch();
+  const {params: {name}} = Route.useMatch();
   const [{data: containerInspector} ] = useAtom(focusedContainerAtom);
-  const [,setContainerInspectorId] = useAtom(focusedContainerIdOrNameAtom);
+  const [,setFocusedContainerIdOrName] = useAtom(focusedContainerIdOrNameAtom);
   const [,setHeading] = useAtom(headingAtom);
 
   useEffect(() => {
-    setContainerInspectorId(containerId);
-  }, [containerId, setContainerInspectorId, setHeading]);
+    setFocusedContainerIdOrName(name);
+  }, [name, setFocusedContainerIdOrName, setHeading]);
 
   const activeTab = window.location.hash ? window.location.hash.slice(1) : 'overview';
 
@@ -81,9 +81,11 @@ const OverviewTab: React.FC<{data: ContainerInspectResponse}> = ({data}) => {
     {
       name: 'Command',
       getValue: data => data.Config?.Cmd,
+      verticalList: false,
     },
     {
       name: 'Args',
+      verticalList: false,
     },
     {
       name: 'Status',
@@ -144,7 +146,7 @@ const ShellTab: React.FC<{data: ContainerInspectResponse}> = ({data}) => {
 }
 
 
-export const Route = createLazyFileRoute('/containers/$containerId')({
+export const Route = createLazyFileRoute('/containers/$name')({
   component: Page,
 });
 

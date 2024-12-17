@@ -93,8 +93,8 @@ const OverviewTab: React.FC<{data: ImageInspect}> = ({data}) => {
                   (value as ContainerSummary[]).map(container => (
                     container.Names?.[0].slice(1) 
                       ? <Link 
-                          to='/containers/$containerId' 
-                          params={{containerId: container.Names?.[0].slice(1)}}
+                          to='/containers/$name' 
+                          params={{name: container.Names?.[0].slice(1)}}
                         >
                           {container.Names?.[0].slice(1)}
                         </Link> 

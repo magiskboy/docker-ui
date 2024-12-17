@@ -1,10 +1,10 @@
 import { createLazyFileRoute, Link } from '@tanstack/react-router'
 import { useAtom } from 'jotai';
 import { focusedNetworkAtom, focusedNetworkIdOrNameAtom } from '../../atoms/networks';
-import { useEffect } from 'react';
+import React, { useEffect } from 'react';
 import { OverviewObjectProps, OverviewObject, JsonViewer } from '../../components';
 import type { Network, ImageInspect } from '../../api/docker-engine';
-import { Tabs, Row, Col, Typography, Tooltip } from 'antd';
+import { Tabs, Row, Col, Typography, Tooltip, Flex, theme, Tag } from 'antd';
 
 const { Text } = Typography;
 
@@ -50,6 +50,8 @@ function RouteComponent() {
 
 
 const OverviewTab: React.FC<{data: Network}> = ({data}) => {
+  const {token: {marginXS, marginSM}} = theme.useToken();
+
   const fieldConfigs: OverviewObjectProps<Network>['fieldConfigs'] = [
       {
         name: 'Name',
@@ -79,15 +81,18 @@ const OverviewTab: React.FC<{data: Network}> = ({data}) => {
             <Row key={'Containers'}>
               <Col span={3}><Text strong>Containers</Text></Col>
               <Col span={12 - 3}>
-                {
-                  Object.entries(containers).map(([id, container]) => (
-                    <Tooltip key={id} title={container.IPv4Address} placement='topLeft'>
-                      <Link key={id} to='/containers/$containerId' params={{containerId: container.Name}}>
-                        {container.Name}
-                      </Link>
-                    </Tooltip>
-                  ))
-                }
+                <Flex vertical gap={marginXS}>
+                  {
+                    Object.entries(containers).map(([id, container]) => (
+                      <Flex key={id} gap={marginSM}>
+                        <Link key={id} to='/containers/$name' params={{name: container.Name}}>
+                          {container.Name}
+                        </Link>
+                        <Tag style={{width: 'fit-content'}}>{container.IPv4Address}</Tag>
+                      </Flex>
+                    ))
+                  }
+                </Flex>
               </Col>
             </Row>
           )

@@ -48,8 +48,8 @@ export const SystemEvents: React.FC<Props> = () => {
         }
 
         if (record.Type === 'container') {
-          const name = value.Attributes?.name;
-          return <Link to='/containers/$containerId' params={{containerId: name!}}>{name}</Link>
+          const name = value.Attributes?.name as string;
+          return <Link to='/containers/$name' params={{name}}>{name}</Link>
         }
 
         if (record.Type === 'network') {

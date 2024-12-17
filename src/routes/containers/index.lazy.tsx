@@ -52,7 +52,7 @@ function Page() {
       title: 'Name',
       sorter: (a, b) => compareStrings(a.name, b.name),
       render: (_, record) => 
-        <Link to={'/containers/$containerId'} params={{'containerId': record.name}}>{record.name}</Link>,
+        <Link to={'/containers/$name'} params={{name: record.name}}>{record.name}</Link>,
     },
     {
       key: 'ports',
@@ -76,8 +76,8 @@ function Page() {
           <Button 
             onClick={() => {
               navigate({
-                to: '/containers/$containerId',
-                params: { containerId: record.name },
+                to: '/containers/$name',
+                params: {name: record.name },
                 hash: 'shell',
               });
             }} 
@@ -103,8 +103,8 @@ function Page() {
           </Popconfirm>
           <Button icon={<IoLogoBuffer 
             onClick={() => navigate({
-              to: '/containers/$containerId', 
-              params: {containerId: record.name}, 
+              to: '/containers/$name', 
+              params: {name: record.name}, 
               hash: 'log',
             })} />} />
         </Flex>

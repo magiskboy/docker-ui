@@ -35,7 +35,7 @@ export const NetworkOverview: React.FC<Props> = ({systemInfo}) => {
       name: 'BridgeNfIP6tables',
     },
   ]
-  return <OverviewObject data={systemInfo} fieldConfigs={fieldConfigs} collapsed />
+  return <OverviewObject data={systemInfo} fieldConfigs={fieldConfigs} collapsed showJson={false} />
 }
 
 

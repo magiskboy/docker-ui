@@ -1,7 +1,7 @@
 import { createLazyFileRoute } from '@tanstack/react-router'
 import { Collapse, CollapseProps, Tabs } from 'antd'
 import { useEffect, useState } from 'react';
-import { SystemEvents } from '../components';
+import { JsonViewer, SystemEvents } from '../components';
 import { useAtom } from 'jotai';
 import { systemAtom } from '../atoms/system';
 import { SwarmOverview, ContainerOverview, CPUOverview, MemoryOverview, NetworkOverview, RuntimeOverview, StorageOverview } from './-components';
@@ -39,8 +39,23 @@ export function Home() {
           key: 'events',
           label: 'Events',
           children: <EventsTab />,
-        }
+        },
+        {
+          key: 'json',
+          label: 'JSON',
+          children: <JsonTab />,
+        },
       ]}
+    />
+  )
+}
+
+
+const JsonTab: React.FC = () => {
+  const [{data: systemInfo}] = useAtom(systemAtom);
+  return (
+    <JsonViewer 
+      fetcher={() => Promise.resolve(systemInfo as object)}
     />
   )
 }

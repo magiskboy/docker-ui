@@ -20,7 +20,7 @@ export const StorageOverview: React.FC<Props> = ({systemInfo}) => {
     }
   ];
 
-  return <OverviewObject fieldConfigs={fieldConfigs} data={systemInfo} collapsed />
+  return <OverviewObject fieldConfigs={fieldConfigs} data={systemInfo} collapsed showJson={false} />
 };
 
 

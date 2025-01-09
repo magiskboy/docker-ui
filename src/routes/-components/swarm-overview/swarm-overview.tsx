@@ -72,7 +72,7 @@ export const SwarmOverview: React.FC<Props> = ({systemInfo}) => {
 
   return (
     <>
-      <OverviewObject fieldConfigs={fieldConfigs} data={systemInfo} labelSpan={12} collapsed />
+      <OverviewObject fieldConfigs={fieldConfigs} data={systemInfo} labelSpan={12} collapsed showJson={false} />
       {contextHolder}
     </>
   ) 

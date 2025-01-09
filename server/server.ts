@@ -12,7 +12,6 @@ import {
 import { WebsockerHandler } from './websocket';
 
 
-
 if (!fs.existsSync(DOCKER_SOCKET)) {
   console.error('Error: Docker socket not found');
   process.exit(1);
@@ -40,9 +39,14 @@ app.use('/api', createProxyMiddleware({
 
 
 app.use('/openapi', express.static(OPENAPI_DIR))
-app.use('/', express.static(STATIC_DIR));
+app.use(express.static(STATIC_DIR));
 
-const server = app.listen(PORT, HOST);
+const server = app.listen(PORT, HOST, () => {
+  console.info(`Server is running on http://${HOST}:${PORT}`);
+  console.info(`OpenAPI is running on http://${HOST}:${PORT}/openapi`);
+  console.info(`Static directory: ${STATIC_DIR}`);
+  console.info(`Docker socket: ${DOCKER_SOCKET}`);
+});
 const websocketHandler = new WebsockerHandler(server);
 websocketHandler.setup();
 

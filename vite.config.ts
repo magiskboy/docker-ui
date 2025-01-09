@@ -7,10 +7,11 @@ export default defineConfig({
   plugins: [TanStackRouterVite(), react()],
   build: {
     outDir: path.join("build", "dist"),
+    minify: false,
   },
-  resolve: {
-    alias: {
-      '@': path.resolve(__dirname, './src')
-    }
-  }
+  // resolve: {
+  //   alias: {
+  //     '@': path.resolve(__dirname, './src')
+  //   }
+  // }
 })

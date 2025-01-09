@@ -44,7 +44,7 @@ function RouteComponent() {
 
 
 const OverviewTab: React.FC<{data: Network}> = ({data}) => {
-  const {token: {marginXS, marginSM}} = theme.useToken();
+  const {token: { marginSM }} = theme.useToken();
 
   const fieldConfigs: OverviewObjectProps<Network>['fieldConfigs'] = [
       {

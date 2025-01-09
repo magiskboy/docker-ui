@@ -1,11 +1,11 @@
 {
   "name": "docker-ui",
   "private": true,
-  "version": "0.0.0",
+  "version": "1.0.0",
   "type": "module",
   "scripts": {
-    "dev": "rm -rf ./build && npm run build:server && concurrently \"vite\" \"node build/server.cjs\"",
-    "build": "npm run build:client && npm run build:server",
+    "dev": "rm -rf ./build && yarn build:server && concurrently \"vite\" \"node build/server.cjs\"",
+    "build": "yarn build:server && yarn build:client",
     "build:client": "tsc -b && vite build",
     "build:server": "tsup",
     "start": "node build/server.js",
@@ -21,11 +21,12 @@
     "@xterm/xterm": "^5.5.0",
     "antd": "^5.21.5",
     "axios": "^1.7.7",
-    "cors": "^2.8.5",
     "dayjs": "^1.11.13",
+    "cors": "^2.8.5",
     "dockerode": "^4.0.2",
     "express": "^4.21.1",
     "http-proxy-middleware": "^3.0.3",
+    "ws": "^8.18.0",
     "i18next": "^23.16.2",
     "i18next-http-backend": "^2.6.2",
     "jotai": "^2.10.1",
@@ -36,8 +37,7 @@
     "react-i18next": "^15.1.0",
     "react-icons": "^5.3.0",
     "react-json-view": "^1.21.3",
-    "uuid": "^11.0.3",
-    "ws": "^8.18.0"
+    "uuid": "^11.0.3"
   },
   "devDependencies": {
     "@eslint/js": "^9.13.0",

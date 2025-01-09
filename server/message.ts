@@ -25,7 +25,6 @@ export class Message<T> {
   }
 
   toString() {
-    console.log(this);
     return JSON.stringify({
       requestId: this.requestId,
       type: this.type,

@@ -14,7 +14,7 @@ export const OverviewObject = <T,>({data, fieldConfigs, labelSpan = 8, collapsed
   const {token: {marginSM, marginXS }} = theme.useToken();
   return (
     <Splitter>
-      <Splitter.Panel className={styles['left-side']}>
+      <Splitter.Panel className={styles['left-side']} defaultSize="60%">
         <Flex gap={marginSM} vertical>
           {
             fieldConfigs.map(field => {

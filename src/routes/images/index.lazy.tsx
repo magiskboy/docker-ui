@@ -10,7 +10,6 @@ import {
   theme,
   Divider,
   notification,
-  Popconfirm,
 } from 'antd'
 import type { TableColumnType, TableProps } from 'antd'
 import {
@@ -22,18 +21,12 @@ import {
 } from '../../utils'
 import {
   deleteImagesAtoms,
-  focusedImageAtom,
   imagesAtom,
-  focusedImageIdOrNameAtom,
 } from '../../atoms/images'
 import ButtonGroup from 'antd/es/button/button-group'
 import { AiOutlineDelete } from 'react-icons/ai'
-import { BsFiletypeJson } from "react-icons/bs";
 import { handleAxiosError } from '../../utils/errors'
-import { InspectorModal } from '../../components'
-import { IoPlayOutline } from "react-icons/io5";
-import { RunContainerModal, RunContainerOptions } from './-components/run-container-modal'
-import { createContainerAtom, startContainerAtom } from '../../atoms/containers'
+import { ImageToolbar } from './-components/image-toolbar';
 
 
 type TableRowSelection<T extends object = object> =
@@ -52,17 +45,6 @@ function Page() {
   const [{ mutate: deleteImages, status: deleteImageStatus }] =
     useAtom(deleteImagesAtoms)
   const [selectedRowKeys, setSelectedRowKeys] = useState<React.Key[]>([])
-  const {
-    token: { marginXS },
-  } = theme.useToken()
-  const [imageInspectorName, setImageInspectorName] = useAtom(
-    focusedImageIdOrNameAtom,
-  )
-  const [{ data: imageInspector }] = useAtom(focusedImageAtom)
-  const [imageToRun, setImageToRun] = useState('');
-  const [{mutate: createContainer}] = useAtom(createContainerAtom);
-  const [{mutate: startContainer}] = useAtom(startContainerAtom);
-  const [isOpenInspector, setIsOpenInspector] = useState(false);
 
   useEffect(() => {
     if (deleteImageStatus === 'success') {
@@ -90,6 +72,7 @@ function Page() {
     status: image.Containers > 0 ? 'In Use' : 'Unused',
     created: image.Created,
     key: image.Id,
+    raw: image,
   }))
 
   const columns: TableColumnType<(typeof data)[0]>[] = [
@@ -142,30 +125,7 @@ function Page() {
       key: 'actions',
       dataIndex: 'actions',
       title: 'Actions',
-      render: (_, record) => (
-        <Flex gap={marginXS}>
-          <Button
-            icon={<BsFiletypeJson />}
-            onClick={() => {
-              setImageInspectorName(record.id);
-              setIsOpenInspector(true);
-            }}
-          />
-          <Popconfirm 
-            title="Are you sure you want to delete this image?" 
-            disabled={record.status === 'In Use'} 
-            onConfirm={() => onDeleteImages([record.id])}
-          >
-            <Button icon={<AiOutlineDelete />} />
-          </Popconfirm>
-          <Button 
-            icon={<IoPlayOutline />} 
-            onClick={() => {
-              setImageToRun(record.repoTag);
-            }}
-          />
-        </Flex>
-      ),
+      render: (_, record) => <ImageToolbar image={record.raw} />,
     },
   ]
 
@@ -176,29 +136,6 @@ function Page() {
 
   const onDeleteImages = (keys?: string[]) => {
     deleteImages(keys ?? (selectedRowKeys as string[]))
-  }
-
-  const onStartContainerFromImage = (options: RunContainerOptions) => {
-    createContainer(options, {
-      onSuccess: (data) => {
-        if (data.Warnings.length > 0) {
-          notification.warning({
-            message: 'Warning',
-            description: data.Warnings.join('\n'),
-          });
-        }
-        else {
-          notification.success({
-            message: 'Success',
-            description: `Started container ${data.Id}`,
-          });
-        }
-
-        startContainer(data.Id);
-        setImageToRun('');
-      }
-    });
-
   }
 
   const isSelected = selectedRowKeys.length > 0
@@ -224,18 +161,6 @@ function Page() {
         dataSource={data}
         columns={columns}
         rowSelection={rowSelection}
-      />
-      <InspectorModal
-        title={imageInspectorName}
-        content={imageInspector!}
-        onClose={() => setIsOpenInspector(false)}
-        open={isOpenInspector}
-      />
-      <RunContainerModal
-        image={imageToRun}
-        open={!!imageToRun}
-        onCancel={() => setImageToRun('')}
-        onRun={onStartContainerFromImage}
       />
     </>
   )

@@ -22,6 +22,7 @@ import {
   OverviewObject,
   OverviewObjectProps,
 } from '../../components'
+import { ImageToolbar } from './-components/image-toolbar'
 
 
 function Page() {
@@ -47,6 +48,16 @@ function Page() {
     <Tabs
       activeKey={activeTab}
       onChange={handleChangeTab}
+      tabBarExtraContent={
+        <ImageToolbar 
+          image={{
+            Id: imageInspector.Id!,
+            Containers: 0,
+            RepoTags: imageInspector.RepoTags ?? [],
+          }} 
+          showInspector={false}
+        />
+      }
       items={[
         {
           key: 'overview',
@@ -133,7 +144,9 @@ const OverviewTab: React.FC<{ data: ImageInspect }> = ({ data }) => {
     },
   ]
 
-  return <OverviewObject data={data} fieldConfigs={fieldConfigs} />
+  return (
+    <OverviewObject data={data} fieldConfigs={fieldConfigs} />
+  )
 }
 
 const LayersTab: React.FC<{ imageName: string }> = ({ imageName }) => {

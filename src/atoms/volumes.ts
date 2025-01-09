@@ -3,6 +3,7 @@ import { atomWithQuery, atomWithMutation } from 'jotai-tanstack-query';
 import { VolumeApi, Configuration } from '../api/docker-engine';
 import { API_URL } from '../constants';
 import { handleAxiosError} from '../utils/errors';
+import _ from 'lodash';
 
 
 const volumeApi = new VolumeApi(new Configuration({
@@ -23,7 +24,8 @@ export const volumesAtom = atomWithQuery(() => ({
   queryKey: ['volumes'],
   queryFn: async () => {
     const response = await volumeApi.volumeList();
-    return response.data.Volumes;
+    const volumes = response.data.Volumes;
+    return _.sortBy(volumes, 'Name');
   },
 }));
 

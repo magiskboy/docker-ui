@@ -1,5 +1,5 @@
-import { createLazyFileRoute, Link } from '@tanstack/react-router'
-import { Tabs } from 'antd';
+import { createLazyFileRoute, Link, useNavigate } from '@tanstack/react-router'
+import { notification, Tabs } from 'antd';
 import React, { useEffect } from 'react';
 import { ContainerInspectResponse } from '../../api/docker-engine';
 import { useAtom } from 'jotai';
@@ -7,6 +7,7 @@ import { focusedContainerAtom, focusedContainerIdOrNameAtom } from '../../atoms/
 import { formatBytes } from '../../utils';
 import { headingAtom } from '../../atoms/common';
 import { ContainerShell, ContainerLog, OverviewObjectProps, OverviewObject } from '../../components';
+import { ContainerToolbar } from './-components/container-toolbar';
 
 
 function Page() {
@@ -14,6 +15,7 @@ function Page() {
   const [{data: containerInspector} ] = useAtom(focusedContainerAtom);
   const [,setFocusedContainerIdOrName] = useAtom(focusedContainerIdOrNameAtom);
   const [,setHeading] = useAtom(headingAtom);
+  const navigate = useNavigate();
 
   useEffect(() => {
     setFocusedContainerIdOrName(name);
@@ -43,7 +45,22 @@ function Page() {
           children:  <ShellTab data={containerInspector} />,
           disabled: !containerInspector?.State?.Running,
         },
-      ]} /> : null
+      ]} tabBarExtraContent={
+        <ContainerToolbar 
+          container={{
+            id: containerInspector.Id!,
+            name: containerInspector.Name!,
+            ports: [],
+            state: containerInspector.State?.Status ?? '',
+          }}
+          showLog={false} 
+          showShell={false} 
+          afterDelete={() => {
+            navigate({to: '/containers'});
+            notification.success({message: `Container ${name} was deleted`});
+          }}
+        />} 
+      /> : null
   )
 }
 

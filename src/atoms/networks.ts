@@ -3,6 +3,7 @@ import { atom } from 'jotai';
 import { NetworkApi, Configuration } from '../api/docker-engine'
 import { API_URL } from '../constants';
 import { handleAxiosError } from '../utils/errors';
+import _ from 'lodash';
 
 
 const networkApi = new NetworkApi(new Configuration({
@@ -23,7 +24,8 @@ export const networksAtom = atomWithQuery(() => ({
   queryKey: ['networks'],
   queryFn: async () => {
     const res = await networkApi.networkList();
-    return res.data;
+    const networks = _.sortBy(res.data, 'Name')
+    return networks;
   },
 }));
 

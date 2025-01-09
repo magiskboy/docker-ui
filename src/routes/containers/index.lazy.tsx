@@ -1,20 +1,15 @@
-import { createLazyFileRoute, Link, useNavigate } from '@tanstack/react-router'
+import { createLazyFileRoute, Link } from '@tanstack/react-router'
 import { useAtomValue } from 'jotai';
 
-import { containersAtom, startContainerAtom, stopContainerAtom, deleteContainerAtom } from '../../atoms/containers';
-import { Divider, Table, Flex, Button, theme, Popconfirm, Tag } from 'antd';
+import { containersAtom } from '../../atoms/containers';
+import { Divider, Table, Flex, Button, Tag } from 'antd';
 import type { TableColumnType } from 'antd';
 import ButtonGroup from 'antd/es/button/button-group';
 import { useEffect, useState } from 'react';
 import { TableRowSelection } from 'antd/es/table/interface';
-import { FaRegCircleStop } from 'react-icons/fa6';
-import { AiOutlineDelete } from 'react-icons/ai';
 import { handleAxiosError } from '../../utils/errors';
 import { compareStrings } from '../../utils';
-import { IoPlayOutline } from "react-icons/io5";
-import { IoLogoBuffer } from "react-icons/io";
-import { IoTerminalOutline } from "react-icons/io5";
-
+import { ContainerToolbar } from './-components/container-toolbar';
 
 
 export const Route = createLazyFileRoute('/containers/')({
@@ -24,11 +19,6 @@ export const Route = createLazyFileRoute('/containers/')({
 function Page() {
   const { data: containers, error: fetchContainerError, isError: isFetchContainerError } = useAtomValue(containersAtom);
   const [selectedKeys, setSelectedKeys] = useState<React.Key[]>([]);
-  const { mutate: stopContainer } = useAtomValue(stopContainerAtom);
-  const { mutate: startContainer } = useAtomValue(startContainerAtom);
-  const { mutate: deleteContainer } = useAtomValue(deleteContainerAtom);
-  const { token: {paddingXS} } = theme.useToken();
-  const navigate = useNavigate();
 
   useEffect(() => {
     if (isFetchContainerError) {
@@ -72,42 +62,12 @@ function Page() {
       dataIndex: 'actions',
       title: 'Actions',
       render: (_, record) => record.id ? (
-        <Flex gap={paddingXS}>
-          <Button 
-            onClick={() => {
-              navigate({
-                to: '/containers/$name',
-                params: {name: record.name },
-                hash: 'shell',
-              });
-            }} 
-            icon={<IoTerminalOutline />} 
-            disabled={record.state !== 'running'}
-          />
-
-          {record.state === 'running' ? 
-            <Popconfirm
-              title="Are you sure you want to stop this container?"
-              onConfirm={() => stopContainer(record.id!)}
-            >
-              <Button icon={<FaRegCircleStop />} />
-            </Popconfirm>
-            : <Button icon={<IoPlayOutline />} onClick={() => startContainer(record.id!)} />
-          }
-
-          <Popconfirm
-            title="Are you sure you want to delete this container?"
-            onConfirm={() => deleteContainer(record.id!)}
-          >
-            <Button icon={<AiOutlineDelete />} />
-          </Popconfirm>
-          <Button icon={<IoLogoBuffer 
-            onClick={() => navigate({
-              to: '/containers/$name', 
-              params: {name: record.name}, 
-              hash: 'log',
-            })} />} />
-        </Flex>
+        <ContainerToolbar container={{
+          id: record.id,
+          name: record.name,
+          ports: record.ports ?? [],
+          state: record.state ?? '',
+        }} />
       ) : null
     }
   ]
@@ -133,3 +93,4 @@ function Page() {
     </>
   )
 }
+

@@ -24,9 +24,9 @@ FROM node:22-alpine AS runner
 
 WORKDIR /opt/docker-ui
 
-COPY --from=builder /opt/docker-ui/package.server.json /opt/docker-ui/package.json
+COPY --from=builder /opt/docker-ui/package.json /opt/docker-ui/package.json
 
-RUN yarn install
+RUN yarn install --frozen-lockfile --production
 
 COPY --from=builder /opt/docker-ui/build /opt/docker-ui/build
 COPY --from=builder /opt/docker-ui/openapi /opt/docker-ui/openapi

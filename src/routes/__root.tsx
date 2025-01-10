@@ -7,6 +7,7 @@ import { Button, Layout, Menu, theme, Image, Flex, Divider } from 'antd';
 import logo from '../assets/images/logo.png';
 import { LuNetwork } from 'react-icons/lu';
 import { MdOutlineStorage, MdOutlineSpaceDashboard } from 'react-icons/md';
+import { SearchImage } from '../components';
 
 
 const { Header, Sider } = Layout;
@@ -67,16 +68,19 @@ const AppLayout: React.FC = () => {
       </Sider>
       <Layout>
         <Header style={{ background: colorBgContainer, padding: 0 }}>
-          <Button
-            type="text"
-            icon={collapsed ? <AiOutlineMenuUnfold /> : <AiOutlineMenuFold />}
-            onClick={() => setCollapsed(!collapsed)}
-            style={{
-              fontSize: '16px',
-              width: 64,
-              height: 64,
-            }}
-          />
+          <Flex align='center'>
+            <Button
+              type="text"
+              icon={collapsed ? <AiOutlineMenuUnfold /> : <AiOutlineMenuFold />}
+              onClick={() => setCollapsed(!collapsed)}
+              style={{
+                fontSize: '16px',
+                width: 64,
+                height: 64,
+              }}
+            />
+            <SearchImage />
+          </Flex>
         </Header>
         <Flex
           vertical

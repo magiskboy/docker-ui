@@ -50,7 +50,8 @@ function Page() {
       title: 'Ports',
       render: (_, record) => {
         return record.ports?.sort().map(port => <Tag key={port}>{port}</Tag>)
-      }
+      },
+      width: '25%'
     },
     {
       key: 'status',

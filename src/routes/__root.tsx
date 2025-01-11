@@ -67,7 +67,7 @@ const AppLayout: React.FC = () => {
         />
       </Sider>
       <Layout>
-        <Header style={{ background: colorBgContainer, padding: 0 }}>
+        <Header style={{ background: colorBgContainer, padding: '0 16px 0 0' }}>
           <Flex align='center'>
             <Button
               type="text"

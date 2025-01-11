@@ -1,13 +1,15 @@
 import { createLazyFileRoute, Link, useNavigate } from '@tanstack/react-router'
-import { notification, Tabs } from 'antd';
-import React, { useEffect } from 'react';
+import { notification, Tabs, Splitter } from 'antd';
+import React, { useEffect, useState } from 'react';
 import { ContainerInspectResponse } from '../../api/docker-engine';
 import { useAtom } from 'jotai';
-import { focusedContainerAtom, focusedContainerIdOrNameAtom } from '../../atoms/containers';
+import { containerApi, focusedContainerAtom, focusedContainerIdOrNameAtom } from '../../atoms/containers';
 import { formatBytes } from '../../utils';
 import { headingAtom } from '../../atoms/common';
 import { ContainerShell, ContainerLog, OverviewObjectProps, OverviewObject } from '../../components';
 import { ContainerToolbar } from './-components/container-toolbar';
+import { Line, LineConfig } from '@ant-design/plots';
+import _ from 'lodash';
 
 
 function Page() {
@@ -43,6 +45,12 @@ function Page() {
           key: 'shell',
           label: 'Shell',
           children:  <ShellTab data={containerInspector} />,
+          disabled: !containerInspector?.State?.Running,
+        },
+        {
+          key: 'monitor',
+          label: 'Monitor',
+          children: <MonitorTab container={containerInspector} />,
           disabled: !containerInspector?.State?.Running,
         },
       ]} tabBarExtraContent={
@@ -131,6 +139,151 @@ const LogTab:React.FC<{data: ContainerInspectResponse}> = ({data}) => {
 
 const ShellTab: React.FC<{data: ContainerInspectResponse}> = ({data}) => {
   return <ContainerShell name={data.Name!} />
+}
+
+const MonitorTab: React.FC<{container: ContainerInspectResponse}> = ({container}) => {
+  const [stats, setStats] = useState<object[]>([]);
+
+  useEffect(() => {
+    const containerName = container.Id ?? container.Name;
+    if (!containerName) return;
+    containerApi.containerStats({ id: containerName, stream: true }, {
+      onDownloadProgress: (event) => {
+        const data = event.event?.target.responseText;
+        const text: string = data.toString();
+        const statData = [];
+        for (const line of text.split('\n').slice(-50)) {
+          try {
+            const item = JSON.parse(line);
+            item['read'] = new Date(item['read']);
+            statData.push(item);
+          } catch {;}
+
+        }
+
+        setStats(_.sortBy(statData, ['read']));
+      }
+    });
+  }, [container.Id, container.Name]);
+
+  const memoryConfig: LineConfig = {
+    scale: {
+      x: {
+        type: 'time'
+      }
+    },
+    data: stats.reduce((prev, curr) => {
+      prev.push({
+        type: 'limit',
+        value: _.get(curr, 'memory_stats.limit'),
+        time: _.get(curr, 'read'),
+      });
+      prev.push({
+        type: 'usage',
+        value: _.get(curr, 'memory_stats.usage'),
+        time: _.get(curr, 'read'),
+      });
+      return prev;
+    }, []),
+    xField: 'time',
+    yField: 'value',
+    colorField: 'type',
+    smooth: true,
+    axis: {
+      y: {
+        label: {
+          formatter: (value: number) => `${value.toFixed(2)}%`
+        }
+      }
+    },
+    autoFit: true,
+    containerAttributes: {
+      style: {
+        height: '100%',
+      }
+    }
+  }
+
+  const cpuConfig: LineConfig = {
+    scale: {
+      x: {
+        type: 'time'
+      }
+    },
+    data: stats.map((stat) => ({
+      value: _.get(stat, 'cpu_stats.cpu_usage.total_usage')!, 
+      time: _.get(stat, 'read'),
+    })),
+    xField: 'time',
+    yField: 'value',
+    smooth: true,
+    axis: {
+      y: {
+        label: {
+          formatter: (value: number) => `${value.toFixed(2)}%`
+        }
+      }
+    },
+    containerAttributes: {
+      style: {
+        height: '100%',
+      }
+    }
+  }
+
+  const networkConfig: LineConfig = {
+    scale: {
+      x: {
+        type: 'time'
+      }
+    },
+    data: stats.map((stat) => ({
+      value: _.get(stat, 'networks.eth0.rx_bytes')!, 
+      time: _.get(stat, 'read')!,
+    })),
+    xField: 'time',
+    yField: 'value',
+    smooth: true,
+    axis: {
+      y: {
+        label: {
+          formatter: (value: number) => `${value.toFixed(2)}%`
+        }
+      }
+    },
+    autoFit: true,
+    containerAttributes: {
+      style: {
+        height: '100%',
+      }
+    }
+  }
+
+  return (
+    <Splitter layout="vertical">
+      <Splitter.Panel>
+        <Splitter>
+          <Splitter.Panel>
+            <Line {...memoryConfig} />
+          </Splitter.Panel>
+          <Splitter.Panel>
+            <Line {...cpuConfig} />
+          </Splitter.Panel>
+        </Splitter>
+      </Splitter.Panel>
+
+      <Splitter.Panel>
+        <Splitter>
+          <Splitter.Panel>
+            <Line {...networkConfig} />
+          </Splitter.Panel>
+          <Splitter.Panel>
+            <Line {...cpuConfig} />
+          </Splitter.Panel>
+        </Splitter>
+      </Splitter.Panel>
+    </Splitter>
+  )
 }
 
 

@@ -172,7 +172,7 @@ const MonitorTab: React.FC<{container: ContainerInspectResponse}> = ({container}
         type: 'time'
       }
     },
-    data: stats.reduce((prev, curr) => {
+    data: stats.reduce((prev: object[], curr) => {
       prev.push({
         type: 'limit',
         value: _.get(curr, 'memory_stats.limit'),

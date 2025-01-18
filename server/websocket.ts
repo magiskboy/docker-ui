@@ -26,16 +26,8 @@ export class WebsockerHandler {
         stream: null
       }
 
-      ws.on('open', () => {
-        this.onOpen(vars);
-      });
-
       ws.on('message', message => {
         this.onMessage(message, vars);
-      });
-
-      ws.on('close', () => {
-        this.onClose(vars);
       });
     });
 
@@ -109,17 +101,7 @@ export class WebsockerHandler {
 
       return;
     }
-
-    // context.ws.close();
   }
-
-  onOpen(context: ContextVars) {
-  }
-
-  onClose(context: ContextVars) {
-    
-  }
-
 }
 
 

@@ -1,5 +1,9 @@
 # Docker UI
 
+[![CI](https://github.com/magiskboy/docker-ui/actions/workflows/ci.yml/badge.svg)](https://github.com/magiskboy/docker-ui/actions/workflows/ci.yml)
+[![Build and Release](https://github.com/magiskboy/docker-ui/actions/workflows/release.yml/badge.svg)](https://github.com/magiskboy/docker-ui/actions/workflows/release.yml)
+![Docker Pulls](https://img.shields.io/docker/pulls/nguyenkhacthanh/docker-ui)
+
 ## How to use?
 
 ```bash

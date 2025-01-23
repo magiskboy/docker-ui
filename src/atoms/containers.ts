@@ -90,7 +90,7 @@ export const createContainerAtom = atomWithMutation(() => ({
     const envParams = options.environments.map((env) => `${env.variable}=${env.value}`);
     const portBindings = options.ports.reduce((acc, item) => ({
       ...acc,
-      [`${item.container}/tcp`]: [{ HostPort: item.host, HostIp: '127.0.0.1' }]
+      [`${item.container}/tcp`]: [{ HostPort: item.host, HostIp: '' }]
     }), {})
     const response = await containerApi.containerCreate({
       name: options.name.trim(),
@@ -101,6 +101,7 @@ export const createContainerAtom = atomWithMutation(() => ({
           PortBindings: portBindings
         },
         Cmd: options.cmd ? options.cmd.split(' ') : undefined,
+        ExposedPorts: options.ports.reduce((acc, item) => ({ ...acc, [`${item.container}/tcp`]: {} }), {})
       }
     });
     return response.data;

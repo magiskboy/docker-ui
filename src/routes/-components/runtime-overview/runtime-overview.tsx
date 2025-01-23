@@ -61,7 +61,7 @@ export const RuntimeOverview: React.FC<Props> = ({systemInfo}) => {
             {
               Object.entries(runtimes || {}).map(([name, value]) => {
                 const spec = {
-                  specification: JSON.parse(value.status?.['org.opencontainers.runtime-spec.features'] || ''),
+                  specification: JSON.parse(value.status?.['org.opencontainers.runtime-spec.features'] ?? ''),
                   path: value.path,
                   args: value.runtimeArgs,
                 };

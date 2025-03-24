@@ -167,6 +167,9 @@ const MonitorTab: React.FC<{container: ContainerInspectResponse}> = ({container}
   }, [container.Id, container.Name]);
 
   const memoryConfig: LineConfig = {
+    title: {
+      visible: true,
+    },
     scale: {
       x: {
         type: 'time'
@@ -205,6 +208,9 @@ const MonitorTab: React.FC<{container: ContainerInspectResponse}> = ({container}
   }
 
   const cpuConfig: LineConfig = {
+    title: {
+      visible: true,
+    },
     scale: {
       x: {
         type: 'time'
